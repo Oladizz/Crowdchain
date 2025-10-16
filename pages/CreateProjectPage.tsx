@@ -23,7 +23,7 @@ const CreateProjectPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleGenerate = async () => {
-    const apiKey = process.env.API_KEY;
+    const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : undefined;
 
     if (!apiKey) {
       setError('AI features are disabled. An API key is required but was not found in the environment configuration.');
