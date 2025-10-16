@@ -1,6 +1,17 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { Project, Proposal, User } from '../types';
+import { Project, Proposal, User, ProjectCategory } from '../types';
 import { mockProjects, mockProposals, mockUser } from '../data';
+
+interface GeneratedProjectData {
+    name: string;
+    description: string;
+    category: ProjectCategory;
+    milestones: {
+        title: string;
+        description: string;
+        fundsRequired: number;
+    }[];
+}
 
 interface AppContextType {
   projects: Project[];
@@ -13,6 +24,7 @@ interface AppContextType {
   fundProject: (projectId: string, amount: number) => void;
   voteOnProposal: (proposalId: string, voteType: 'for' | 'against') => void;
   updateMilestoneStatus: (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => void;
+  createProject: (projectData: GeneratedProjectData) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -81,8 +93,58 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }))
   };
 
+  const createProject = (projectData: GeneratedProjectData) => {
+    if (!user) {
+        console.error("User must be logged in to create a project");
+        return;
+    }
+
+    const newProjectId = (projects.length + 1 + Date.now()).toString();
+    const fundingGoal = projectData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0);
+
+    const newProject: Project = {
+        id: newProjectId,
+        name: projectData.name,
+        creator: user.username,
+        creatorWallet: user.walletAddress,
+        image: `https://picsum.photos/seed/${newProjectId}/800/600`,
+        description: projectData.description,
+        category: projectData.category,
+        fundingGoal: fundingGoal,
+        amountRaised: 0,
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        milestones: projectData.milestones.map((m, index) => ({
+            id: index + 1,
+            title: m.title,
+            description: m.description,
+            fundsRequired: m.fundsRequired,
+            status: 'Pending',
+        })),
+        daoStatus: 'Pending',
+        updates: [],
+    };
+
+    const newProposal: Proposal = {
+        id: `p${proposals.length + 1 + Date.now()}`,
+        projectId: newProjectId,
+        projectName: newProject.name,
+        type: 'New Project',
+        description: `Proposal to approve the new project: "${newProject.name}".`,
+        votesFor: 0,
+        votesAgainst: 0,
+        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+
+    setProjects(prevProjects => [...prevProjects, newProject]);
+    setProposals(prevProposals => [newProposal, ...prevProposals]);
+    setUser(prevUser => {
+        if (!prevUser) return null;
+        return { ...prevUser, createdProjectIds: [...prevUser.createdProjectIds, newProjectId] };
+    });
+  };
+
   return (
-    <AppContext.Provider value={{ projects, proposals, user, theme, login, logout, toggleTheme, fundProject, voteOnProposal, updateMilestoneStatus }}>
+    <AppContext.Provider value={{ projects, proposals, user, theme, login, logout, toggleTheme, fundProject, voteOnProposal, updateMilestoneStatus, createProject }}>
       {children}
     </AppContext.Provider>
   );

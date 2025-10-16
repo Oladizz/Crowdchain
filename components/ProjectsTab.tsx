@@ -14,7 +14,12 @@ const StatusBadge: React.FC<{ status: Milestone['status'] }> = ({ status }) => {
     return <span className={`${baseClasses} ${statusClasses[status]}`}>{status}</span>;
 }
 
-const ProjectsTab: React.FC = () => {
+interface ProjectsTabProps {
+    setActiveTab: (tab: 'investments' | 'projects' | 'create' | 'settings') => void;
+}
+
+
+const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
     const { user, projects, updateMilestoneStatus } = useAppContext();
 
     if (!user) return null;
@@ -23,7 +28,12 @@ const ProjectsTab: React.FC = () => {
 
     return (
         <div className="space-y-6 animate-fade-in">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Your Created Projects</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Your Created Projects</h2>
+                <Button variant="primary" onClick={() => setActiveTab('create')}>
+                    Create New Project
+                </Button>
+            </div>
             {myProjects.length > 0 ? (
                 <div className="space-y-6">
                     {myProjects.map(project => (
@@ -63,7 +73,6 @@ const ProjectsTab: React.FC = () => {
             ) : (
                 <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
                     <p className="text-brand-muted">You haven't created any projects yet.</p>
-                     <Link to="/create"><Button variant="primary" className="mt-4">Create a Project</Button></Link>
                 </div>
             )}
         </div>

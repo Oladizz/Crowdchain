@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ProjectCategory } from '../types';
-import Button from '../components/Button';
-import Spinner from '../components/Spinner';
+import Button from './Button';
+import Spinner from './Spinner';
 import { useAppContext } from '../context/AppContext';
 
 interface GeneratedMilestone {
@@ -18,7 +18,7 @@ interface GeneratedProjectData {
     milestones: GeneratedMilestone[];
 }
 
-const CreateProjectPage: React.FC = () => {
+const CreateProjectTab: React.FC = () => {
     const [prompt, setPrompt] = useState('');
     const [generatedData, setGeneratedData] = useState<GeneratedProjectData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -107,21 +107,21 @@ const CreateProjectPage: React.FC = () => {
             <div className="text-center py-16 animate-fade-in">
                 <h1 className="text-2xl sm:text-3xl font-bold text-white">Thank You!</h1>
                 <p className="mt-4 text-brand-muted">Your project has been submitted for DAO review.</p>
-                <p className="text-brand-muted">You will be notified once the proposal is live for voting.</p>
+                <p className="text-brand-muted">You can track its status under the "My Projects" tab.</p>
             </div>
         );
     }
     
     return (
-        <div className="space-y-8 max-w-4xl mx-auto">
+        <div className="space-y-8 max-w-4xl mx-auto animate-fade-in">
             <div className="text-center">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Bring Your Idea to Life</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">Bring Your Idea to Life</h1>
                 <p className="mt-2 sm:mt-4 text-sm sm:text-base text-brand-muted">
                     Describe your project idea, and our AI will help you build a comprehensive plan to submit for funding.
                 </p>
             </div>
             
-            <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4 animate-fade-in">
+            <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
                 <label htmlFor="prompt" className="block text-sm font-medium text-brand-muted">Your Project Idea</label>
                 <textarea
                     id="prompt"
@@ -193,4 +193,4 @@ const CreateProjectPage: React.FC = () => {
     );
 };
 
-export default CreateProjectPage;
+export default CreateProjectTab;

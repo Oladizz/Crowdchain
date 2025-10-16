@@ -4,8 +4,9 @@ import Button from '../components/Button';
 import InvestmentsTab from '../components/InvestmentsTab';
 import ProjectsTab from '../components/ProjectsTab';
 import SettingsTab from '../components/SettingsTab';
+import CreateProjectTab from '../components/CreateProjectTab';
 
-type Tab = 'investments' | 'projects' | 'settings';
+type Tab = 'investments' | 'projects' | 'create' | 'settings';
 
 const DashboardPage: React.FC = () => {
     const { user, login } = useAppContext();
@@ -26,7 +27,9 @@ const DashboardPage: React.FC = () => {
             case 'investments':
                 return <InvestmentsTab />;
             case 'projects':
-                return <ProjectsTab />;
+                return <ProjectsTab setActiveTab={setActiveTab} />;
+            case 'create':
+                return <CreateProjectTab />;
             case 'settings':
                 return <SettingsTab />;
             default:
@@ -37,7 +40,7 @@ const DashboardPage: React.FC = () => {
     const TabButton: React.FC<{tabName: Tab, label: string}> = ({ tabName, label }) => (
         <button
             onClick={() => setActiveTab(tabName)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === tabName ? 'bg-brand-button text-white' : 'text-brand-muted hover:bg-brand-surface hover:text-white'}`}
+            className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === tabName ? 'bg-brand-button text-white' : 'text-brand-muted hover:bg-brand-surface hover:text-white'}`}
         >
             {label}
         </button>
@@ -55,9 +58,10 @@ const DashboardPage: React.FC = () => {
 
             <div>
                 <div data-guide="dashboard-tabs" className="border-b border-gray-200 dark:border-brand-surface mb-6">
-                    <nav className="-mb-px flex space-x-4" aria-label="Tabs">
+                    <nav className="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
                         <TabButton tabName="investments" label="My Investments" />
                         <TabButton tabName="projects" label="My Projects" />
+                        <TabButton tabName="create" label="Create Project" />
                         <TabButton tabName="settings" label="Settings" />
                     </nav>
                 </div>

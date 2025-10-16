@@ -42,7 +42,7 @@ const ExplorePage: React.FC = () => {
         <p className="mt-4 sm:mt-6 max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-brand-muted animate-fade-in" style={{ animationDelay: '0.5s' }}>
           CrowdChain empowers creators and communities by connecting innovative ideas with blockchain-powered funding and DAO governance.
         </p>
-        <div className="mt-8 sm:mt-10 flex flex-row justify-center space-x-4 animate-fade-in" style={{ animationDelay: '1s' }}>
+         <div className="mt-8 sm:mt-10 flex flex-row justify-center space-x-4 animate-fade-in" style={{ animationDelay: '1s' }}>
           <a href="#all-projects" onClick={(e) => {
               e.preventDefault();
               document.getElementById('all-projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -51,7 +51,7 @@ const ExplorePage: React.FC = () => {
               Explore Projects
             </Button>
           </a>
-          <Link to="/create">
+          <Link to="/dashboard">
             <Button variant="secondary">Start a Project</Button>
           </Link>
         </div>
@@ -72,11 +72,9 @@ const ExplorePage: React.FC = () => {
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Spotlight Projects</h2>
         </div>
         {spotlightProjects.length > 0 ? (
-          <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {spotlightProjects.map(project => (
-              <div key={project.id} className="flex-shrink-0 w-64">
-                <ProjectCard project={project} />
-              </div>
+              <ProjectCard key={project.id} project={project} />
             ))}
           </div>
         ) : (
@@ -95,7 +93,7 @@ const ExplorePage: React.FC = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="sticky top-16 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-md z-40 py-4 rounded-lg">
+        <div className="sticky top-16 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-md z-20 py-4 rounded-lg">
             <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-grow w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -128,7 +126,7 @@ const ExplorePage: React.FC = () => {
 
         {/* Projects Grid */}
         {filteredProjects.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredProjects.map(project => (
                 <ProjectCard key={project.id} project={project} />
             ))}
