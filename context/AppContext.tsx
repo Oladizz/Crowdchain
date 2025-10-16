@@ -25,13 +25,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove(theme === 'dark' ? 'light' : 'dark');
-    root.classList.add(theme);
-    
-    const body = window.document.body;
-    body.classList.remove(theme === 'dark' ? 'bg-white' : 'dark:bg-brand-bg', theme === 'dark' ? 'text-gray-800' : 'dark:text-white');
-    body.classList.add(theme === 'dark' ? 'dark:bg-brand-bg' : 'bg-white', theme === 'dark' ? 'dark:text-white' : 'text-gray-800');
-
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
   }, [theme]);
 
   const login = () => setUser(mockUser);
