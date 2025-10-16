@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import DaoPage from './pages/DaoPage';
@@ -45,7 +46,7 @@ const AppContent: React.FC = () => {
             <Header />
             <main className="flex-grow w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20">
                 <Routes>
-                    <Route path="/" element={<ExplorePage />} />
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/explore" element={<ExplorePage />} />
                     <Route path="/create" element={<CreateProjectPage />} />
                     <Route path="/project/:id" element={<ProjectDetailPage />} />

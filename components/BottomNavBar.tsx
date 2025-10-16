@@ -54,7 +54,8 @@ const BottomNavBar: React.FC = () => {
   return (
     <nav data-guide="nav-bar" className="fixed bottom-0 left-0 right-0 h-14 bg-white/95 dark:bg-brand-surface/95 backdrop-blur-sm border-t border-gray-200 dark:border-brand-surface z-50">
       <div className="container mx-auto h-full flex justify-around items-center">
-        <NavItem to="/" label="Explore" icon={CompassIcon} />
+        <NavItem to="/" label="Home" icon={HomeIcon} />
+        <NavItem to="/explore" label="Explore" icon={CompassIcon} />
         {user && <NavItem to="/dashboard" label="Dashboard" icon={UserIcon} />}
         <NavItem to="/dao" label="DAO" icon={DaoIcon} />
       </div>
