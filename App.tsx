@@ -42,7 +42,7 @@ const AppContent: React.FC = () => {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-white dark:bg-brand-bg font-sans transition-colors duration-300">
+        <div className="flex flex-col min-h-screen bg-white dark:bg-brand-bg font-sans text-gray-800 dark:text-white transition-colors duration-300">
             <Header />
             <main className="flex-grow w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20">
                 <Routes>

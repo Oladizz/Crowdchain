@@ -23,8 +23,10 @@ const CreateProjectPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleGenerate = async () => {
-    if (!process.env.API_KEY) {
-      setError('AI features are disabled because an API key is not configured.');
+    const apiKey = process.env.API_KEY;
+
+    if (!apiKey) {
+      setError('AI features are disabled. An API key is required but was not found in the environment configuration.');
       return;
     }
 
@@ -37,7 +39,7 @@ const CreateProjectPage: React.FC = () => {
     setGeneratedData(null);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+      const ai = new GoogleGenAI({ apiKey });
       const responseSchema = {
         type: Type.OBJECT,
         properties: {
