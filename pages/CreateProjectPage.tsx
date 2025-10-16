@@ -1,76 +1,94 @@
 import React, { useState } from 'react';
+import { GoogleGenAI, Type } from '@google/genai';
 import { ProjectCategory } from '../types';
 import Button from '../components/Button';
+import Spinner from '../components/Spinner';
 
-// Define interfaces for form data
-interface MilestoneData {
+interface GeneratedMilestone {
     title: string;
     description: string;
-    fundsRequired: number | '';
+    fundsRequired: number;
 }
 
-interface ProjectFormData {
+interface GeneratedProjectData {
     name: string;
     description: string;
     category: ProjectCategory;
-    milestones: MilestoneData[];
+    milestones: GeneratedMilestone[];
 }
 
-// Initial state for new milestones and the form
-const initialMilestone: MilestoneData = { title: '', description: '', fundsRequired: '' };
-const initialProjectData: ProjectFormData = {
-    name: '',
-    description: '',
-    category: ProjectCategory.TECH,
-    milestones: [{ ...initialMilestone }]
-};
-
 const CreateProjectPage: React.FC = () => {
-    const [projectData, setProjectData] = useState<ProjectFormData>(initialProjectData);
-    const [submitted, setSubmitted] = useState(false);
+    const [prompt, setPrompt] = useState('');
+    const [generatedData, setGeneratedData] = useState<GeneratedProjectData | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [submitted, setSubmitted] = useState(false);
 
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setProjectData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleMilestoneChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        const newMilestones = [...projectData.milestones];
-        const parsedValue = name === 'fundsRequired' ? (value === '' ? '' : parseInt(value, 10)) : value;
-        (newMilestones[index] as any)[name] = parsedValue;
-        setProjectData(prev => ({ ...prev, milestones: newMilestones }));
-    };
-
-    const addMilestone = () => {
-        setProjectData(prev => ({
-            ...prev,
-            milestones: [...prev.milestones, { ...initialMilestone }]
-        }));
-    };
-
-    const removeMilestone = (index: number) => {
-        if (projectData.milestones.length > 1) {
-            const newMilestones = projectData.milestones.filter((_, i) => i !== index);
-            setProjectData(prev => ({ ...prev, milestones: newMilestones }));
-        }
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!projectData.name.trim() || !projectData.description.trim()) {
-            setError('Project Name and Description are required.');
+    const handleGenerate = async () => {
+        if (!prompt) {
+            setError('Please enter a project idea.');
             return;
         }
-        for (const milestone of projectData.milestones) {
-            if (!milestone.title.trim() || milestone.fundsRequired === '' || milestone.fundsRequired <= 0) {
-                setError('All milestones must have a valid title and funding amount greater than zero.');
-                return;
-            }
-        }
+        setIsLoading(true);
         setError(null);
-        console.log('Submitting project:', projectData);
+        setGeneratedData(null);
+
+        try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+
+            const responseSchema = {
+                type: Type.OBJECT,
+                properties: {
+                    name: { type: Type.STRING, description: 'A creative and concise name for the project.' },
+                    description: { type: Type.STRING, description: 'A compelling, detailed description of the project (2-3 sentences).' },
+                    category: {
+                        type: Type.STRING,
+                        enum: Object.values(ProjectCategory),
+                        description: 'The most appropriate category for the project.'
+                    },
+                    milestones: {
+                        type: Type.ARRAY,
+                        description: 'A list of 3-4 logical milestones to complete the project.',
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                title: { type: Type.STRING, description: 'A short, clear title for the milestone.' },
+                                description: { type: Type.STRING, description: 'A brief description of what this milestone entails.' },
+                                fundsRequired: { type: Type.INTEGER, description: 'The estimated amount of funds (USD) required for this milestone.' }
+                            },
+                            required: ['title', 'description', 'fundsRequired']
+                        }
+                    }
+                },
+                required: ['name', 'description', 'category', 'milestones']
+            };
+
+            const fullPrompt = `You are a creative project manager for a decentralized crowdfunding platform. Based on the user's idea, generate a complete project plan.
+            User Idea: "${prompt}"
+            Your task is to flesh this out into a structured project with a name, description, category, and logical funding milestones. Ensure the total funding goal (sum of milestones) is realistic for a crowdfunded project. Respond ONLY with the JSON object.`;
+
+            const response = await ai.models.generateContent({
+                model: 'gemini-2.5-flash',
+                contents: fullPrompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema,
+                },
+            });
+
+            const parsedData = JSON.parse(response.text);
+            setGeneratedData(parsedData);
+
+        } catch (err) {
+            console.error(err);
+            setError('Failed to generate project plan. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSubmit = () => {
+        console.log('Submitting project to DAO:', generatedData);
         setSubmitted(true);
     };
 
@@ -83,64 +101,83 @@ const CreateProjectPage: React.FC = () => {
             </div>
         );
     }
-
+    
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <div className="text-center">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Create a New Project</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Bring Your Idea to Life</h1>
                 <p className="mt-2 sm:mt-4 text-sm sm:text-base text-brand-muted">
-                    Fill out the details below to submit your project for DAO review.
+                    Describe your project idea, and our AI will help you build a comprehensive plan to submit for funding.
                 </p>
             </div>
-
-            <form className="space-y-6 animate-fade-in" onSubmit={handleSubmit}>
-                <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
-                    <h2 className="text-lg font-semibold text-white">Project Details</h2>
-                    <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-brand-muted">Project Name</label>
-                        <input type="text" name="name" id="name" value={projectData.name} onChange={handleFormChange} required className="mt-1 w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white" />
-                    </div>
-                    <div>
-                        <label htmlFor="category" className="block text-sm font-medium text-brand-muted">Category</label>
-                        <select name="category" id="category" value={projectData.category} onChange={handleFormChange} className="mt-1 w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white">
-                            {Object.values(ProjectCategory).map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-brand-muted">Description</label>
-                        <textarea name="description" id="description" rows={6} value={projectData.description} onChange={handleFormChange} required className="mt-1 w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white" />
-                    </div>
+            
+            <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4 animate-fade-in">
+                <label htmlFor="prompt" className="block text-sm font-medium text-brand-muted">Your Project Idea</label>
+                <textarea
+                    id="prompt"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="e.g., An open-source, decentralized social media app focused on user privacy."
+                    rows={4}
+                    className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white"
+                    disabled={isLoading}
+                />
+                 <div className="flex justify-end">
+                    <Button onClick={handleGenerate} disabled={isLoading || !prompt} variant="primary">
+                        {isLoading ? <><Spinner className="mr-2" /> Generating...</> : 'Generate Project Plan'}
+                    </Button>
                 </div>
+            </div>
 
-                <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
-                    <h2 className="text-lg font-semibold text-white">Initial Milestones</h2>
-                    <div className="space-y-4">
-                        {projectData.milestones.map((milestone, index) => (
-                            <div key={index} className="p-3 border border-brand-bg rounded-md space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-base font-medium text-white">Milestone {index + 1}</h3>
-                                    {projectData.milestones.length > 1 && (
-                                        <button type="button" onClick={() => removeMilestone(index)} className="text-red-500 hover:text-red-400 text-xs font-semibold">Remove</button>
-                                    )}
+            {error && <p className="text-center text-red-400 bg-red-900/50 p-3 rounded-md animate-fade-in">{error}</p>}
+
+            {isLoading && (
+                <div className="text-center py-10">
+                    <div className="flex justify-center items-center">
+                        <Spinner className="h-8 w-8" />
+                    </div>
+                    <p className="mt-4 text-brand-muted animate-pulse">Generating your project... this may take a moment.</p>
+                </div>
+            )}
+
+            {generatedData && (
+                <div className="space-y-6 animate-fade-in">
+                    <h2 className="text-xl font-semibold text-center text-white">Review Your Generated Project</h2>
+                    <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Project Details</h3>
+                        <div>
+                            <p className="text-sm font-medium text-brand-muted">Project Name</p>
+                            <p className="mt-1 text-white">{generatedData.name}</p>
+                        </div>
+                         <div>
+                            <p className="text-sm font-medium text-brand-muted">Category</p>
+                            <p className="mt-1 text-white">{generatedData.category}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-brand-muted">Description</p>
+                            <p className="mt-1 text-brand-muted">{generatedData.description}</p>
+                        </div>
+                    </div>
+                     <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                        <h3 className="text-lg font-semibold text-white">Generated Milestones</h3>
+                        <div className="space-y-3">
+                            {generatedData.milestones.map((milestone, index) => (
+                                <div key={index} className="p-3 border border-brand-bg rounded-md">
+                                    <p className="font-medium text-white">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
+                                    <p className="text-sm text-brand-muted">{milestone.description}</p>
                                 </div>
-                                <input type="text" name="title" value={milestone.title} onChange={(e) => handleMilestoneChange(index, e)} placeholder="Milestone Title" required className="w-full bg-brand-bg border-none focus:ring-0 rounded-md p-1 text-white font-medium" />
-                                <textarea name="description" value={milestone.description} onChange={(e) => handleMilestoneChange(index, e)} placeholder="Milestone Description" rows={2} className="w-full bg-brand-bg border-none focus:ring-0 rounded-md p-1 text-sm text-brand-muted" />
-                                <div className="flex items-center space-x-2">
-                                    <span className="text-brand-blue-light">$</span>
-                                    <input type="number" name="fundsRequired" value={milestone.fundsRequired} onChange={(e) => handleMilestoneChange(index, e)} placeholder="Funds Required" required min="1" className="w-1/3 bg-brand-bg border-none focus:ring-0 rounded-md p-1 text-white" />
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                         <p className="text-right font-bold text-white">Total Funding Goal: ${generatedData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0).toLocaleString()}</p>
                     </div>
-                    <Button type="button" variant="secondary" onClick={addMilestone}>Add Another Milestone</Button>
+                    <div className="flex justify-end space-x-4">
+                        <Button variant="secondary" onClick={handleGenerate} disabled={isLoading}>
+                            {isLoading ? <Spinner className="mr-2" /> : 'Regenerate'}
+                        </Button>
+                        <Button variant="primary" onClick={handleSubmit} disabled={isLoading}>Submit to DAO</Button>
+                    </div>
                 </div>
-
-                {error && <p className="text-center text-red-400 bg-red-900/50 p-3 rounded-md animate-fade-in">{error}</p>}
-
-                <div className="flex justify-end space-x-4">
-                    <Button type="submit" variant="primary">Submit for DAO Review</Button>
-                </div>
-            </form>
+            )}
         </div>
     );
 };
