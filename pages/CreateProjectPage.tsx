@@ -23,6 +23,11 @@ const CreateProjectPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
 
   const handleGenerate = async () => {
+    if (!process.env.API_KEY) {
+      setError('AI features are disabled because an API key is not configured.');
+      return;
+    }
+
     if (!idea.trim()) {
       setError('Please enter your project idea.');
       return;
