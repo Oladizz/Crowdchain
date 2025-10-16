@@ -1,0 +1,147 @@
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import ProjectCard from '../components/ProjectCard';
+import { ProjectCategory } from '../types';
+import { useAppContext } from '../context/AppContext';
+import Button from '../components/Button';
+import StatCard from '../components/StatCard';
+
+const ExplorePage: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [category, setCategory] = useState('All');
+  
+  const { projects } = useAppContext();
+  
+  const approvedProjects = useMemo(() => projects.filter(p => p.daoStatus === 'Approved'), [projects]);
+
+  const spotlightProjects = approvedProjects.slice(0, 4);
+  
+  const totalFundsRaised = Math.round(projects.reduce((sum, p) => sum + p.amountRaised, 0));
+  const activeProjectsCount = approvedProjects.length;
+  const daoMembers = 1337; // Example static value
+
+  const filteredProjects = useMemo(() => {
+    return approvedProjects.filter(project => {
+      const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            project.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = category === 'All' || project.category === category;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, category, approvedProjects]);
+
+  return (
+    <div className="space-y-8 sm:space-y-12">
+      {/* Hero Section */}
+      <section className="text-center pt-8 pb-6" data-guide="welcome">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white animate-text-focus-in">
+          The Future of Funding, <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-purple">
+            Decentralized.
+          </span>
+        </h1>
+        <p className="mt-4 sm:mt-6 max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-brand-muted animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          CrowdChain empowers creators and communities by connecting innovative ideas with blockchain-powered funding and DAO governance.
+        </p>
+        <div className="mt-8 sm:mt-10 flex flex-row justify-center space-x-4 animate-fade-in" style={{ animationDelay: '1s' }}>
+          <a href="#all-projects" onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('all-projects')?.scrollIntoView({ behavior: 'smooth' });
+          }}>
+            <Button variant="primary">
+              Explore Projects
+            </Button>
+          </a>
+          <Link to="/create">
+            <Button variant="secondary">Start a Project</Button>
+          </Link>
+        </div>
+      </section>
+      
+      {/* Stats Section */}
+      <section className="animate-slide-in-bottom" style={{ animationDelay: '1.2s' }}>
+        <div className="grid grid-cols-3 gap-4 sm:gap-8 max-w-4xl mx-auto">
+          <StatCard label="Total Funds Raised" value={totalFundsRaised} prefix="$" />
+          <StatCard label="Active Projects" value={activeProjectsCount} />
+          <StatCard label="DAO Members" value={daoMembers} />
+        </div>
+      </section>
+
+      {/* Spotlight Projects Section */}
+      <section className="animate-slide-in-bottom" style={{ animationDelay: '1.4s' }} data-guide="spotlight">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Spotlight Projects</h2>
+        </div>
+        {spotlightProjects.length > 0 ? (
+          <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
+            {spotlightProjects.map(project => (
+              <div key={project.id} className="flex-shrink-0 w-64">
+                <ProjectCard project={project} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
+            <p className="text-brand-muted">No spotlight projects available right now.</p>
+          </div>
+        )}
+      </section>
+      
+      <section id="all-projects" data-guide="all-projects" className="space-y-8 sm:space-y-10 scroll-mt-20">
+        <div className="text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">All Projects</h1>
+            <p className="mt-2 sm:mt-4 max-w-2xl mx-auto text-sm sm:text-base text-brand-muted">
+            Discover the next wave of innovation. Fund projects you believe in and help shape the future.
+            </p>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="sticky top-16 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-md z-40 py-4 rounded-lg">
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+            <div className="relative flex-grow w-full">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                </div>
+                <input
+                type="text"
+                placeholder="Search projects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-gray-100 dark:bg-brand-surface border border-gray-200 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md py-2 pl-10 pr-4 text-gray-900 dark:text-white text-sm"
+                />
+            </div>
+            <div className="w-full md:w-auto">
+                <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-gray-100 dark:bg-brand-surface border border-gray-200 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md py-2 pl-4 pr-10 text-gray-900 dark:text-white text-sm"
+                >
+                <option value="All">All Categories</option>
+                {Object.values(ProjectCategory).map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                ))}
+                </select>
+            </div>
+            </div>
+        </div>
+
+        {/* Projects Grid */}
+        {filteredProjects.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            {filteredProjects.map(project => (
+                <ProjectCard key={project.id} project={project} />
+            ))}
+            </div>
+        ) : (
+            <div className="text-center py-12 sm:py-16">
+                <p className="text-lg sm:text-xl text-brand-muted">No projects found.</p>
+                <p className="text-sm sm:text-base text-brand-muted mt-2">Try a different search or filter.</p>
+            </div>
+        )}
+      </section>
+    </div>
+  );
+};
+
+export default ExplorePage;
