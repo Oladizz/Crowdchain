@@ -10,6 +10,7 @@ import BottomNavBar from './components/BottomNavBar';
 import DashboardPage from './pages/DashboardPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import WaitlistPage from './pages/WaitlistPage';
 import UserGuide from './components/UserGuide';
 import GuideButton from './components/GuideButton';
 import { guideConfig } from './guideConfig';
@@ -55,6 +56,7 @@ const AppContent: React.FC = () => {
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/about" element={<AboutPage />} />
                         <Route path="/contact" element={<ContactPage />} />
+                        <Route path="/waitlist" element={<WaitlistPage />} />
                     </Routes>
                 </main>
             </div>
