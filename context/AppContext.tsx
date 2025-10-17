@@ -90,11 +90,31 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           });
         } catch (switchError: any) {
           if (switchError.code === 4902) {
-            addToast('Please add Base Sepolia to your wallet.', 'error');
+            try {
+              await (window as any).ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: BASE_SEPOLIA_CHAIN_ID,
+                    chainName: 'Base Sepolia',
+                    nativeCurrency: {
+                      name: 'Ethereum',
+                      symbol: 'ETH',
+                      decimals: 18,
+                    },
+                    rpcUrls: ['https://sepolia.base.org'],
+                    blockExplorerUrls: ['https://sepolia-explorer.base.org'],
+                  },
+                ],
+              });
+            } catch (addError) {
+              addToast('Failed to add Base Sepolia network.', 'error');
+              return;
+            }
           } else {
             addToast('Failed to switch to Base Sepolia.', 'error');
+            return;
           }
-          return;
         }
       }
 
