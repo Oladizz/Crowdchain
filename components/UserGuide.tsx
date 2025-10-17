@@ -90,9 +90,9 @@ const UserGuide: React.FC<UserGuideProps> = ({ steps, guideKey, onClose }) => {
   }
   
   return (
-    <div className="fixed inset-0 z-[100]" aria-live="polite" aria-modal="true" role="dialog">
+    <div className="fixed inset-0 z-[100] pointer-events-none" aria-live="polite" aria-modal="true" role="dialog">
       <div style={highlightStyle}></div>
-      <div style={infoBoxStyle} className="bg-brand-surface p-4 rounded-lg shadow-2xl text-white animate-fade-in w-full sm:w-auto">
+      <div style={infoBoxStyle} className="bg-brand-surface p-4 rounded-lg shadow-2xl text-white animate-fade-in w-full sm:w-auto pointer-events-auto">
         <h3 className="font-bold text-lg mb-2 text-brand-blue-light">{step.title}</h3>
         <p className="text-sm">{step.content}</p>
         <div className="flex justify-between items-center mt-4">
