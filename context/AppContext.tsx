@@ -49,34 +49,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  // Load state from localStorage on initial mount
-  useEffect(() => {
-    try {
-        const storedProjects = localStorage.getItem('crowdchain_projects');
-        if (storedProjects) {
-            setProjects(JSON.parse(storedProjects));
-        }
-        const storedProposals = localStorage.getItem('crowdchain_proposals');
-        if (storedProposals) {
-            setProposals(JSON.parse(storedProposals));
-        }
-    } catch (error) {
-        console.error("Failed to parse data from localStorage", error);
-        localStorage.removeItem('crowdchain_projects');
-        localStorage.removeItem('crowdchain_proposals');
-    }
-  }, []);
-
-  // Save projects to localStorage whenever they change
-  useEffect(() => {
-      localStorage.setItem('crowdchain_projects', JSON.stringify(projects));
-  }, [projects]);
-
-  // Save proposals to localStorage whenever they change
-  useEffect(() => {
-      localStorage.setItem('crowdchain_proposals', JSON.stringify(proposals));
-  }, [proposals]);
-
   useEffect(() => {
     const root = window.document.documentElement;
     if (theme === 'dark') {
