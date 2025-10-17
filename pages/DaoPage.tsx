@@ -1,25 +1,15 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import ProposalCard from '../components/ProposalCard';
-import StatCard from '../components/StatCard';
 import { Proposal } from '../types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
 
 const DaoPage: React.FC = () => {
-    const { proposals, projects, user, voteOnProposal } = useAppContext();
+    const { proposals, user, voteOnProposal } = useAppContext();
     const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
     
-    const proposalsPassed = useMemo(() => {
-        return proposals.filter(p => new Date(p.deadline) < new Date() && p.votesFor > p.votesAgainst).length;
-    }, [proposals]);
-
-    const totalMembers = useMemo(() => {
-        const creatorWallets = new Set(projects.map(p => p.creatorWallet));
-        return creatorWallets.size;
-    }, [projects]);
-
     const handleVoteClick = (proposal: Proposal) => {
         if (user) {
             setSelectedProposal(proposal);
@@ -45,14 +35,6 @@ const DaoPage: React.FC = () => {
           Your voice matters. Participate in the governance of CrowdChain by voting on project proposals and milestone approvals.
         </p>
       </div>
-
-      <section>
-          <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
-              <StatCard label="Total Members" value={totalMembers} />
-              <StatCard label="Proposals Passed" value={proposalsPassed} />
-              <StatCard label="Active Proposals" value={proposals.length} />
-          </div>
-      </section>
 
       <section data-guide="proposal-section">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Active Proposals</h2>
