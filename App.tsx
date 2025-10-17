@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
@@ -13,6 +14,7 @@ import UserGuide from './components/UserGuide';
 import GuideButton from './components/GuideButton';
 import { guideConfig } from './guideConfig';
 import Sidebar from './components/Sidebar';
+import ToastContainer from './components/ToastContainer';
 
 const AppContent: React.FC = () => {
     const location = useLocation();
@@ -57,6 +59,7 @@ const AppContent: React.FC = () => {
                 </main>
             </div>
             <BottomNavBar />
+            <ToastContainer />
             {activeGuide && guideConfig[activeGuide] && (
                 <UserGuide 
                     steps={guideConfig[activeGuide]} 

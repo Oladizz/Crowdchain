@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo } from 'react';
 import ProposalCard from '../components/ProposalCard';
 import StatCard from '../components/StatCard';
 import { Proposal } from '../types';
@@ -7,11 +8,17 @@ import Modal from '../components/Modal';
 import Button from '../components/Button';
 
 const DaoPage: React.FC = () => {
-    const { proposals, user, voteOnProposal } = useAppContext();
+    const { proposals, projects, user, voteOnProposal } = useAppContext();
     const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
     
-    const totalMembers = 1337;
-    const proposalsPassed = 12;
+    const proposalsPassed = useMemo(() => {
+        return proposals.filter(p => new Date(p.deadline) < new Date() && p.votesFor > p.votesAgainst).length;
+    }, [proposals]);
+
+    const totalMembers = useMemo(() => {
+        const creatorWallets = new Set(projects.map(p => p.creatorWallet));
+        return creatorWallets.size;
+    }, [projects]);
 
     const handleVoteClick = (proposal: Proposal) => {
         if (user) {

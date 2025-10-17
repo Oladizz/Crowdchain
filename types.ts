@@ -45,6 +45,8 @@ export interface Proposal {
 
 export interface User {
   walletAddress: string;
+  username?: string;
+  avatar?: string;
   createdProjectIds: string[];
   fundedProjects: { projectId: string; amount: number }[];
 }

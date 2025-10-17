@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
@@ -57,12 +58,16 @@ const DashboardPage: React.FC = () => {
         <div className="space-y-8">
             <div data-guide="dashboard-welcome" className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Welcome</h1>
-                    <p className="text-brand-muted mt-1 font-mono text-sm break-all">{user.walletAddress}</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white break-words">Welcome, {user.username || 'Creator'}</h1>
+                    <p className="text-brand-muted mt-1 font-mono text-sm break-words">{user.walletAddress}</p>
                 </div>
-                 <div className="w-16 h-16 rounded-full bg-brand-surface flex items-center justify-center self-start sm:self-center flex-shrink-0">
-                    <UserIcon className="w-10 h-10 text-brand-muted" />
-                </div>
+                 {user.avatar ? (
+                    <img src={user.avatar} alt="User Avatar" className="w-16 h-16 rounded-full object-cover bg-brand-surface self-start sm:self-center flex-shrink-0" />
+                 ) : (
+                    <div className="w-16 h-16 rounded-full bg-brand-surface flex items-center justify-center self-start sm:self-center flex-shrink-0">
+                        <UserIcon className="w-10 h-10 text-brand-muted" />
+                    </div>
+                 )}
             </div>
 
             <div>

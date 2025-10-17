@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
@@ -6,7 +7,7 @@ import ProjectCard from '../components/ProjectCard';
 import { useAppContext } from '../context/AppContext';
 
 const ChevronRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}>
+    <svg xmlns="http://www.w.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
     </svg>
 );
@@ -40,7 +41,11 @@ const HomePage: React.FC = () => {
   
   const totalFundsRaised = Math.round(projects.reduce((sum, p) => sum + p.amountRaised, 0));
   const activeProjectsCount = approvedProjects.length;
-  const daoMembers = 1337; // Example static value
+  
+  const daoMembers = useMemo(() => {
+    const creatorWallets = new Set(projects.map(p => p.creatorWallet));
+    return creatorWallets.size;
+  }, [projects]);
 
   return (
     <div className="space-y-12">

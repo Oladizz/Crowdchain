@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
@@ -69,7 +70,7 @@ const ProjectDetailPage: React.FC = () => {
     <>
       <div className="lg:grid lg:grid-cols-3 lg:gap-12">
         {/* Left Column (Image & Funding) */}
-        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl break-words">{project.name}</h1>
           <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-lg shadow-2xl" />
           
@@ -100,7 +101,7 @@ const ProjectDetailPage: React.FC = () => {
           <div data-guide="project-funding" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5 sticky top-24">
             <ProgressBar value={project.amountRaised} max={project.fundingGoal} />
             <div className="mt-4">
-              <p className="text-xl sm:text-2xl font-bold text-brand-blue-light">${project.amountRaised.toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-bold text-brand-blue-light break-words">${project.amountRaised.toLocaleString()}</p>
               <p className="text-xs sm:text-sm text-brand-muted">raised of ${project.fundingGoal.toLocaleString()} goal</p>
             </div>
             <div className="mt-4 sm:mt-6 flex justify-between text-sm sm:text-base">

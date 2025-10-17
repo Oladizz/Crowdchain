@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -62,11 +63,15 @@ const Sidebar: React.FC = () => {
             {user && (
                 <div className="mt-auto p-2 bg-brand-bg rounded-lg">
                     <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0">
-                           <UserIcon className="w-6 h-6 text-brand-muted" />
-                        </div>
+                        {user.avatar ? (
+                            <img src={user.avatar} alt="User avatar" className="w-10 h-10 rounded-full bg-brand-surface object-cover flex-shrink-0" />
+                        ) : (
+                            <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0">
+                                <UserIcon className="w-6 h-6 text-brand-muted" />
+                            </div>
+                        )}
                         <div className="ml-3 overflow-hidden">
-                            <p className="text-sm font-semibold text-white">Connected</p>
+                            <p className="text-sm font-semibold text-white truncate">{user.username || 'Connected'}</p>
                             <p className="text-xs text-brand-muted truncate font-mono">{truncateAddress(user.walletAddress)}</p>
                         </div>
                     </div>

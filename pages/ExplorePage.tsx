@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
@@ -18,7 +19,11 @@ const ExplorePage: React.FC = () => {
   
   const totalFundsRaised = Math.round(projects.reduce((sum, p) => sum + p.amountRaised, 0));
   const activeProjectsCount = approvedProjects.length;
-  const daoMembers = 1337; // Example static value
+  
+  const daoMembers = useMemo(() => {
+    const creatorWallets = new Set(projects.map(p => p.creatorWallet));
+    return creatorWallets.size;
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
     return approvedProjects.filter(project => {
@@ -97,7 +102,7 @@ const ExplorePage: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-grow w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 </div>

@@ -56,7 +56,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                                             <p className="font-medium text-gray-900 dark:text-white break-words">{milestone.title}</p>
                                             <p className="text-xs text-brand-muted break-words">{milestone.description}</p>
                                         </div>
-                                        <div className="flex items-center space-x-3 self-end sm:self-center">
+                                        <div className="flex items-center flex-wrap gap-2 justify-end self-end sm:self-center">
                                             <StatusBadge status={milestone.status} />
                                             {milestone.status === 'Pending' && (
                                                 <Button size="sm" variant="ghost" className="text-xs" onClick={() => updateMilestoneStatus(project.id, milestone.id, 'In Review')}>

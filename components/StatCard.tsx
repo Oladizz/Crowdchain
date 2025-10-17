@@ -1,3 +1,4 @@
+
 import React from 'react';
 import useAnimatedCounter from '../hooks/useAnimatedCounter';
 
@@ -13,7 +14,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, prefix = '', suffix =
 
   return (
     <div className="bg-brand-surface p-4 rounded-lg text-center shadow-lg animate-fade-in">
-      <p className="text-2xl md:text-4xl font-bold text-brand-blue">
+      <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-brand-blue break-words leading-tight overflow-hidden">
         {prefix}{animatedValue.toLocaleString()}{suffix}
       </p>
       <p className="mt-2 text-sm sm:text-base text-brand-muted">{label}</p>

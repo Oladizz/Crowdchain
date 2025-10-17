@@ -20,7 +20,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, onVoteClick }) =>
   return (
     <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-3 sm:p-4 shadow-lg hover:shadow-brand-purple/30 transition-shadow duration-300">
       <div className="flex justify-between items-start">
-        <div>
+        <div className="min-w-0">
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${proposal.type === 'New Project' ? 'bg-blue-900 text-blue-300' : 'bg-purple-900 text-purple-300'}`}>
             {proposal.type}
           </span>

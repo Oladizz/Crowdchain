@@ -1,5 +1,4 @@
 
-
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { Project, Proposal, User, ProjectCategory } from '../types';
 
@@ -14,11 +13,20 @@ interface GeneratedProjectData {
     }[];
 }
 
+interface Toast {
+    id: number;
+    message: string;
+    type: 'success' | 'error' | 'info';
+}
+
 interface AppContextType {
   projects: Project[];
   proposals: Proposal[];
   user: User | null;
   theme: 'dark' | 'light';
+  toasts: Toast[];
+  addToast: (message: string, type: Toast['type']) => void;
+  removeToast: (id: number) => void;
   login: () => void;
   logout: () => void;
   toggleTheme: () => void;
@@ -26,6 +34,7 @@ interface AppContextType {
   voteOnProposal: (proposalId: string, voteType: 'for' | 'against') => void;
   updateMilestoneStatus: (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => void;
   createProject: (projectData: GeneratedProjectData) => void;
+  updateUserProfile: (profileData: { username?: string; avatar?: string }) => void;
   truncateAddress: (address: string) => string;
 }
 
@@ -38,6 +47,35 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  // Load state from localStorage on initial mount
+  useEffect(() => {
+    try {
+        const storedProjects = localStorage.getItem('crowdchain_projects');
+        if (storedProjects) {
+            setProjects(JSON.parse(storedProjects));
+        }
+        const storedProposals = localStorage.getItem('crowdchain_proposals');
+        if (storedProposals) {
+            setProposals(JSON.parse(storedProposals));
+        }
+    } catch (error) {
+        console.error("Failed to parse data from localStorage", error);
+        localStorage.removeItem('crowdchain_projects');
+        localStorage.removeItem('crowdchain_proposals');
+    }
+  }, []);
+
+  // Save projects to localStorage whenever they change
+  useEffect(() => {
+      localStorage.setItem('crowdchain_projects', JSON.stringify(projects));
+  }, [projects]);
+
+  // Save proposals to localStorage whenever they change
+  useEffect(() => {
+      localStorage.setItem('crowdchain_proposals', JSON.stringify(proposals));
+  }, [proposals]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -48,23 +86,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [theme]);
 
+  const addToast = (message: string, type: Toast['type']) => {
+      const id = Date.now();
+      setToasts(prevToasts => [...prevToasts, { id, message, type }]);
+  };
+
+  const removeToast = (id: number) => {
+      setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
+  };
+
   const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   const connectWallet = async () => {
     if (!(window as any).ethereum) {
-      alert('Please install a web3 wallet like MetaMask!');
+      addToast('Please install a web3 wallet!', 'error');
       return;
     }
 
     try {
-      // FIX: Untyped function calls may not accept type arguments. Removed generic type argument.
       const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
       if (!accounts || accounts.length === 0) {
-        console.error('No accounts found.');
+        addToast('No accounts found.', 'error');
         return;
       }
-
-      // FIX: Untyped function calls may not accept type arguments. Removed generic type argument.
       const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
       if (chainId !== BASE_SEPOLIA_CHAIN_ID) {
         try {
@@ -74,35 +118,39 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           });
         } catch (switchError: any) {
           if (switchError.code === 4902) {
-            alert('Please add the Base Sepolia network to your wallet.');
+            addToast('Please add Base Sepolia to your wallet.', 'error');
           } else {
-            alert('Failed to switch to Base Sepolia network.');
+            addToast('Failed to switch to Base Sepolia.', 'error');
           }
           return;
         }
       }
 
       const walletAddress = accounts[0];
-      // In a real app, you'd fetch user data. Here we create a new user object.
-      // This means project/investment associations are lost on disconnect.
+      const savedProfileJSON = localStorage.getItem(`user_profile_${walletAddress}`);
+      const savedProfile = savedProfileJSON ? JSON.parse(savedProfileJSON) : {};
+      
       setUser({
         walletAddress,
-        createdProjectIds: [],
-        fundedProjects: [],
+        createdProjectIds: [], // In real app, this would be fetched
+        fundedProjects: [], // In real app, this would be fetched
+        ...savedProfile,
       });
       localStorage.setItem('walletAddress', walletAddress);
+      addToast('Wallet connected!', 'success');
 
     } catch (error) {
       console.error('Failed to connect wallet:', error);
+      addToast('Failed to connect wallet.', 'error');
     }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('walletAddress');
+    addToast('Wallet disconnected.', 'info');
   };
 
-  // Effect for auto-connecting and setting up listeners
   useEffect(() => {
     const autoConnect = async () => {
         if ((window as any).ethereum && localStorage.getItem('walletAddress')) {
@@ -126,7 +174,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if ((window as any).ethereum) {
       (window as any).ethereum.on('accountsChanged', handleAccountsChanged);
       (window as any).ethereum.on('chainChanged', handleChainChanged);
-
       return () => {
         (window as any).ethereum?.removeListener('accountsChanged', handleAccountsChanged);
         (window as any).ethereum?.removeListener('chainChanged', handleChainChanged);
@@ -153,6 +200,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setUser({...user, fundedProjects: [...user.fundedProjects, {projectId, amount}]});
         }
     }
+    addToast(`Successfully funded with $${amount}!`, 'success');
   };
 
   const voteOnProposal = (proposalId: string, voteType: 'for' | 'against') => {
@@ -166,6 +214,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return p;
       })
     );
+    addToast('Your vote has been cast!', 'success');
   };
   
   const updateMilestoneStatus = (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => {
@@ -182,17 +231,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const createProject = (projectData: GeneratedProjectData) => {
     if (!user) {
-        console.error("User must be logged in to create a project");
+        addToast("Connect your wallet to create a project.", 'error');
         return;
     }
-
     const newProjectId = (projects.length + 1 + Date.now()).toString();
     const fundingGoal = projectData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0);
-
     const newProject: Project = {
         id: newProjectId,
         name: projectData.name,
-        creator: user.walletAddress,
+        creator: user.username || user.walletAddress,
         creatorWallet: user.walletAddress,
         image: `https://picsum.photos/seed/${newProjectId}/800/600`,
         description: projectData.description,
@@ -210,7 +257,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         daoStatus: 'Pending',
         updates: [],
     };
-
     const newProposal: Proposal = {
         id: `p${proposals.length + 1 + Date.now()}`,
         projectId: newProjectId,
@@ -221,17 +267,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         votesAgainst: 0,
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     };
-
     setProjects(prevProjects => [...prevProjects, newProject]);
     setProposals(prevProposals => [newProposal, ...prevProposals]);
     setUser(prevUser => {
         if (!prevUser) return null;
         return { ...prevUser, createdProjectIds: [...prevUser.createdProjectIds, newProjectId] };
     });
+    addToast('Project submitted to DAO for review!', 'success');
+  };
+
+  const updateUserProfile = (profileData: { username?: string; avatar?: string }) => {
+    if (!user) return;
+    setUser(prevUser => {
+        if (!prevUser) return null;
+        const updatedUser = { ...prevUser, ...profileData };
+        const profileToSave = {
+            username: updatedUser.username,
+            avatar: updatedUser.avatar,
+        };
+        localStorage.setItem(`user_profile_${updatedUser.walletAddress}`, JSON.stringify(profileToSave));
+        return updatedUser;
+    });
+    addToast('Profile updated successfully!', 'success');
   };
 
   return (
-    <AppContext.Provider value={{ projects, proposals, user, theme, login: connectWallet, logout, toggleTheme, fundProject, voteOnProposal, updateMilestoneStatus, createProject, truncateAddress }}>
+    <AppContext.Provider value={{ projects, proposals, user, theme, toasts, addToast, removeToast, login: connectWallet, logout, toggleTheme, fundProject, voteOnProposal, updateMilestoneStatus, createProject, updateUserProfile, truncateAddress }}>
       {children}
     </AppContext.Provider>
   );
