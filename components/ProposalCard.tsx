@@ -24,8 +24,8 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, onVoteClick }) =>
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${proposal.type === 'New Project' ? 'bg-blue-900 text-blue-300' : 'bg-purple-900 text-purple-300'}`}>
             {proposal.type}
           </span>
-          <h3 className="mt-2 text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{proposal.projectName}</h3>
-          <p className="mt-1 text-sm text-brand-muted">{proposal.description}</p>
+          <h3 className="mt-2 text-base sm:text-lg font-semibold text-gray-900 dark:text-white break-words">{proposal.projectName}</h3>
+          <p className="mt-1 text-sm text-brand-muted break-words">{proposal.description}</p>
         </div>
         <div className="text-right flex-shrink-0 ml-4">
              <p className="text-xs sm:text-sm text-brand-muted">Voting ends in</p>

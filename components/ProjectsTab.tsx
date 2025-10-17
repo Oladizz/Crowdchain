@@ -40,7 +40,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                         <div key={project.id} className="bg-gray-100 dark:bg-brand-surface p-4 rounded-lg">
                             <div className="flex justify-between items-center mb-4">
                                 <div>
-                                    <Link to={`/project/${project.id}`} className="font-semibold text-lg text-gray-900 dark:text-white hover:underline">{project.name}</Link>
+                                    <Link to={`/project/${project.id}`} className="font-semibold text-lg text-gray-900 dark:text-white hover:underline break-words">{project.name}</Link>
                                     <p className={`text-sm font-medium mt-1 ${project.daoStatus === 'Approved' ? 'text-green-400' : 'text-yellow-400'}`}>
                                         DAO Status: {project.daoStatus}
                                     </p>
@@ -53,8 +53,8 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                                 {project.milestones.map(milestone => (
                                     <li key={milestone.id} className="flex flex-col sm:flex-row justify-between sm:items-center p-3 bg-gray-200 dark:bg-brand-bg rounded-md gap-3">
                                         <div>
-                                            <p className="font-medium text-gray-900 dark:text-white">{milestone.title}</p>
-                                            <p className="text-xs text-brand-muted">{milestone.description}</p>
+                                            <p className="font-medium text-gray-900 dark:text-white break-words">{milestone.title}</p>
+                                            <p className="text-xs text-brand-muted break-words">{milestone.description}</p>
                                         </div>
                                         <div className="flex items-center space-x-3 self-end sm:self-center">
                                             <StatusBadge status={milestone.status} />

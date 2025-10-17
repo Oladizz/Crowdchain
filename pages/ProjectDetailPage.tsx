@@ -67,79 +67,77 @@ const ProjectDetailPage: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto">
-        <div className="lg:grid lg:grid-cols-3 lg:gap-12">
-          {/* Left Column (Image & Funding) */}
-          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl">{project.name}</h1>
-            <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-lg shadow-2xl" />
-            
-            <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Project Story</h2>
-                <p className="text-sm sm:text-base text-brand-muted leading-relaxed">{project.description}</p>
-            </div>
-
-            <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Updates</h2>
-                {project.updates.length > 0 ? (
-                  <div className="space-y-4">
-                      {project.updates.map((update, index) => (
-                          <div key={index} className="border-l-4 border-brand-blue pl-4">
-                              <p className="text-xs sm:text-sm text-brand-muted">{new Date(update.date).toLocaleDateString()}</p>
-                              <p className="text-sm sm:text-base text-gray-900 dark:text-white">{update.message}</p>
-                          </div>
-                      ))}
-                  </div>
-                ) : (
-                  <p className="text-sm sm:text-base text-brand-muted">No updates yet. Stay tuned!</p>
-                )}
-            </div>
+      <div className="lg:grid lg:grid-cols-3 lg:gap-12">
+        {/* Left Column (Image & Funding) */}
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl break-words">{project.name}</h1>
+          <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-lg shadow-2xl" />
+          
+          <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Project Story</h2>
+              <p className="text-sm sm:text-base text-brand-muted leading-relaxed break-words">{project.description}</p>
           </div>
 
-          {/* Right Column (Stats & Milestones) */}
-          <div className="mt-8 lg:mt-0 space-y-4 sm:space-y-6">
-            <div data-guide="project-funding" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5 sticky top-24">
-              <ProgressBar value={project.amountRaised} max={project.fundingGoal} />
-              <div className="mt-4">
-                <p className="text-xl sm:text-2xl font-bold text-brand-blue-light">${project.amountRaised.toLocaleString()}</p>
-                <p className="text-xs sm:text-sm text-brand-muted">raised of ${project.fundingGoal.toLocaleString()} goal</p>
-              </div>
-              <div className="mt-4 sm:mt-6 flex justify-between text-sm sm:text-base">
-                  <div>
-                      <p className="font-bold text-gray-900 dark:text-white">{percentage}%</p>
-                      <p className="text-xs sm:text-sm text-brand-muted">Funded</p>
-                  </div>
-                  <div>
-                      <p className="font-bold text-gray-900 dark:text-white">{daysLeft}</p>
-                      <p className="text-xs sm:text-sm text-brand-muted">Days Left</p>
-                  </div>
-              </div>
-              {project.daoStatus === 'Pending' && <p className="mt-4 text-center text-xs sm:text-sm bg-yellow-900 text-yellow-300 p-2 rounded-md">Project is under DAO review.</p>}
-              <Button 
-                data-guide="fund-button"
-                variant="primary" 
-                className="w-full mt-6 text-sm sm:text-base"
-                onClick={() => setIsFundingModalOpen(true)}
-                disabled={!user || project.daoStatus !== 'Approved' || daysLeft <= 0}
-              >
-                {daysLeft > 0 ? 'Fund this Project' : 'Funding Ended'}
-              </Button>
-            </div>
+          <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Updates</h2>
+              {project.updates.length > 0 ? (
+                <div className="space-y-4">
+                    {project.updates.map((update, index) => (
+                        <div key={index} className="border-l-4 border-brand-blue pl-4">
+                            <p className="text-xs sm:text-sm text-brand-muted">{new Date(update.date).toLocaleDateString()}</p>
+                            <p className="text-sm sm:text-base text-gray-900 dark:text-white">{update.message}</p>
+                        </div>
+                    ))}
+                </div>
+              ) : (
+                <p className="text-sm sm:text-base text-brand-muted">No updates yet. Stay tuned!</p>
+              )}
+          </div>
+        </div>
 
-            <div data-guide="milestones" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4">Milestones</h3>
-              <ul className="space-y-4">
-                {project.milestones.map(milestone => (
-                  <li key={milestone.id} className="flex items-start space-x-3 sm:space-x-4">
-                      <div><MilestoneStatusIcon status={milestone.status}/></div>
-                      <div>
-                          <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
-                          <p className="text-xs sm:text-sm text-brand-muted">{milestone.description}</p>
-                      </div>
-                  </li>
-                ))}
-              </ul>
+        {/* Right Column (Stats & Milestones) */}
+        <div className="mt-8 lg:mt-0 space-y-4 sm:space-y-6">
+          <div data-guide="project-funding" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5 sticky top-24">
+            <ProgressBar value={project.amountRaised} max={project.fundingGoal} />
+            <div className="mt-4">
+              <p className="text-xl sm:text-2xl font-bold text-brand-blue-light">${project.amountRaised.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-brand-muted">raised of ${project.fundingGoal.toLocaleString()} goal</p>
             </div>
+            <div className="mt-4 sm:mt-6 flex justify-between text-sm sm:text-base">
+                <div>
+                    <p className="font-bold text-gray-900 dark:text-white">{percentage}%</p>
+                    <p className="text-xs sm:text-sm text-brand-muted">Funded</p>
+                </div>
+                <div>
+                    <p className="font-bold text-gray-900 dark:text-white">{daysLeft}</p>
+                    <p className="text-xs sm:text-sm text-brand-muted">Days Left</p>
+                </div>
+            </div>
+            {project.daoStatus === 'Pending' && <p className="mt-4 text-center text-xs sm:text-sm bg-yellow-900 text-yellow-300 p-2 rounded-md">Project is under DAO review.</p>}
+            <Button 
+              data-guide="fund-button"
+              variant="primary" 
+              className="w-full mt-6 text-sm sm:text-base"
+              onClick={() => setIsFundingModalOpen(true)}
+              disabled={!user || project.daoStatus !== 'Approved' || daysLeft <= 0}
+            >
+              {daysLeft > 0 ? 'Fund this Project' : 'Funding Ended'}
+            </Button>
+          </div>
+
+          <div data-guide="milestones" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4">Milestones</h3>
+            <ul className="space-y-4">
+              {project.milestones.map(milestone => (
+                <li key={milestone.id} className="flex items-start space-x-3 sm:space-x-4">
+                    <div><MilestoneStatusIcon status={milestone.status}/></div>
+                    <div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
+                        <p className="text-xs sm:text-sm text-brand-muted break-words">{milestone.description}</p>
+                    </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

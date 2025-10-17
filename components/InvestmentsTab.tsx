@@ -23,7 +23,7 @@ const InvestmentsTab: React.FC = () => {
                              <Link to={`/project/${projectId}`} key={projectId} className="block bg-gray-100 dark:bg-brand-surface p-4 rounded-lg hover:shadow-lg transition-shadow">
                                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                                     <div className="flex-grow">
-                                        <p className="font-semibold text-gray-900 dark:text-white">{project.name}</p>
+                                        <p className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</p>
                                         <p className="text-sm text-brand-muted">You invested: <span className="font-bold text-brand-blue-light">${amount.toLocaleString()}</span></p>
                                     </div>
                                     <div className="w-full sm:w-1/3">
