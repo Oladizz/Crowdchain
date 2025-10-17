@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -46,7 +47,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon }) => {
 };
 
 const Sidebar: React.FC = () => {
-    const { user } = useAppContext();
+    const { user, truncateAddress } = useAppContext();
     return (
         <aside className="fixed top-0 left-0 z-40 w-64 h-screen bg-brand-surface border-r border-gray-800 hidden md:flex flex-col p-4">
             <div className="flex items-center space-x-2 mb-8 px-2">
@@ -61,10 +62,12 @@ const Sidebar: React.FC = () => {
             {user && (
                 <div className="mt-auto p-2 bg-brand-bg rounded-lg">
                     <div className="flex items-center">
-                        <img src={user.avatar} alt="User avatar" className="w-10 h-10 rounded-full" />
-                        <div className="ml-3">
-                            <p className="text-sm font-semibold text-white">{user.username}</p>
-                            <p className="text-xs text-brand-muted truncate">{user.walletAddress}</p>
+                        <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0">
+                           <UserIcon className="w-6 h-6 text-brand-muted" />
+                        </div>
+                        <div className="ml-3 overflow-hidden">
+                            <p className="text-sm font-semibold text-white">Connected</p>
+                            <p className="text-xs text-brand-muted truncate font-mono">{truncateAddress(user.walletAddress)}</p>
                         </div>
                     </div>
                 </div>

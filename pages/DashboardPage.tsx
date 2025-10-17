@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
@@ -7,6 +8,12 @@ import SettingsTab from '../components/SettingsTab';
 import CreateProjectTab from '../components/CreateProjectTab';
 
 type Tab = 'investments' | 'projects' | 'create' | 'settings';
+
+const UserIcon: React.FC<{className?: string}> = ({className}) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+);
 
 const DashboardPage: React.FC = () => {
     const { user, login } = useAppContext();
@@ -50,10 +57,12 @@ const DashboardPage: React.FC = () => {
         <div className="space-y-8">
             <div data-guide="dashboard-welcome" className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Welcome, {user.username}</h1>
-                    <p className="text-brand-muted mt-1">{user.bio}</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Welcome</h1>
+                    <p className="text-brand-muted mt-1 font-mono text-sm break-all">{user.walletAddress}</p>
                 </div>
-                <img src={user.avatar} alt="User avatar" className="w-16 h-16 rounded-full self-start sm:self-center" />
+                 <div className="w-16 h-16 rounded-full bg-brand-surface flex items-center justify-center self-start sm:self-center flex-shrink-0">
+                    <UserIcon className="w-10 h-10 text-brand-muted" />
+                </div>
             </div>
 
             <div>

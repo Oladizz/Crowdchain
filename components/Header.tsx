@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import Button from './Button';
@@ -10,7 +11,7 @@ const BlockIcon: React.FC = () => (
 );
 
 const Header: React.FC = () => {
-  const { user, login } = useAppContext();
+  const { user, login, truncateAddress } = useAppContext();
 
   return (
     <header className="bg-white/80 dark:bg-brand-bg/80 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-200 dark:border-brand-surface/50">
@@ -23,8 +24,8 @@ const Header: React.FC = () => {
           <div className="w-full flex justify-end">
             {user ? (
               <div className="flex items-center space-x-2">
-                <Link to="/dashboard" className="text-xs sm:text-sm font-medium bg-brand-surface text-brand-muted px-3 py-2 rounded-lg hover:text-white transition-colors">
-                  {user.walletAddress}
+                <Link to="/dashboard" className="text-xs sm:text-sm font-medium bg-brand-surface text-brand-muted px-3 py-2 rounded-lg hover:text-white transition-colors font-mono">
+                  {truncateAddress(user.walletAddress)}
                 </Link>
               </div>
             ) : (
