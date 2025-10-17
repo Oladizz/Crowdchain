@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { doc, setDoc, collection, addDoc, getDocs } from 'firebase/firestore';
+import { doc, setDoc, collection, addDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { Project, Proposal, User, ProjectCategory } from '../types';
 
@@ -198,50 +198,94 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
   };
 
-  const fundProject = (projectId: string, amount: number) => {
-    setProjects(prevProjects =>
-      prevProjects.map(p =>
-        p.id === projectId ? { ...p, amountRaised: p.amountRaised + amount } : p
-      )
-    );
-    if (user) {
-        const existingFunding = user.fundedProjects.find(fp => fp.projectId === projectId);
-        if (existingFunding) {
-            const updatedFundedProjects = user.fundedProjects.map(fp => fp.projectId === projectId ? {...fp, amount: fp.amount + amount} : fp);
-            setUser({...user, fundedProjects: updatedFundedProjects});
-        } else {
-            setUser({...user, fundedProjects: [...user.fundedProjects, {projectId, amount}]});
-        }
+  const fundProject = async (projectId: string, amount: number) => {
+    if (!user) {
+      addToast("Connect your wallet to fund a project.", 'error');
+      return;
     }
-    addToast(`Successfully funded with $${amount}!`, 'success');
+    try {
+      const projectRef = doc(db, "projects", projectId);
+      const project = projects.find(p => p.id === projectId);
+      if (project) {
+        const newAmount = project.amountRaised + amount;
+        await updateDoc(projectRef, { amountRaised: newAmount });
+
+        setProjects(prevProjects =>
+          prevProjects.map(p =>
+            p.id === projectId ? { ...p, amountRaised: newAmount } : p
+          )
+        );
+        addToast(`Successfully funded with $${amount}!`, 'success');
+      }
+    } catch (error) {
+      console.error("Error funding project:", error);
+      addToast('Failed to fund project.', 'error');
+    }
   };
 
-  const voteOnProposal = (proposalId: string, voteType: 'for' | 'against') => {
-    setProposals(prevProposals =>
-      prevProposals.map(p => {
-        if (p.id === proposalId) {
-          return voteType === 'for'
-            ? { ...p, votesFor: p.votesFor + 1 } 
-            : { ...p, votesAgainst: p.votesAgainst + 1 };
-        }
-        return p;
-      })
-    );
-    addToast('Your vote has been cast!', 'success');
+  const voteOnProposal = async (proposalId: string, voteType: 'for' | 'against') => {
+    if (!user) {
+      addToast("Connect your wallet to vote.", 'error');
+      return;
+    }
+    try {
+      const proposalRef = doc(db, "proposals", proposalId);
+      const proposal = proposals.find(p => p.id === proposalId);
+      if (proposal) {
+        const newVotesFor = voteType === 'for' ? proposal.votesFor + 1 : proposal.votesFor;
+        const newVotesAgainst = voteType === 'against' ? proposal.votesAgainst + 1 : proposal.votesAgainst;
+
+        await updateDoc(proposalRef, {
+          votesFor: newVotesFor,
+          votesAgainst: newVotesAgainst
+        });
+
+        setProposals(prevProposals =>
+          prevProposals.map(p => {
+            if (p.id === proposalId) {
+              return { ...p, votesFor: newVotesFor, votesAgainst: newVotesAgainst };
+            }
+            return p;
+          })
+        );
+        addToast('Your vote has been cast!', 'success');
+      }
+    } catch (error) {
+      console.error("Error voting on proposal:", error);
+      addToast('Failed to cast vote.', 'error');
+    }
   };
   
-  const updateMilestoneStatus = (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => {
-    setProjects(prevProjects => prevProjects.map(p => {
-        if (p.id === projectId) {
-            return {
-                ...p,
-                milestones: p.milestones.map(m => m.id === milestoneId ? {...m, status} : m)
+  const updateMilestoneStatus = async (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => {
+    if (!user) {
+      addToast("Connect your wallet to update milestone status.", 'error');
+      return;
+    }
+    try {
+      const projectRef = doc(db, "projects", projectId);
+      const project = projects.find(p => p.id === projectId);
+      if (project) {
+        const updatedMilestones = project.milestones.map(m =>
+          m.id === milestoneId ? { ...m, status } : m
+        );
+        await updateDoc(projectRef, { milestones: updatedMilestones });
+
+        setProjects(prevProjects => prevProjects.map(p => {
+            if (p.id === projectId) {
+                return {
+                    ...p,
+                    milestones: updatedMilestones
+                }
             }
+            return p;
+        }));
+        if (status === 'In Review') {
+            addToast('Milestone submitted for DAO review.', 'info');
         }
-        return p;
-    }));
-    if (status === 'In Review') {
-        addToast('Milestone submitted for DAO review.', 'info');
+      }
+    } catch (error) {
+      console.error("Error updating milestone status:", error);
+      addToast('Failed to update milestone status.', 'error');
     }
   };
 
@@ -329,19 +373,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const updateUserProfile = (profileData: { username?: string; avatar?: string }) => {
-    if (!user) return;
-    setUser(prevUser => {
-        if (!prevUser) return null;
-        const updatedUser = { ...prevUser, ...profileData };
-        const profileToSave = {
-            username: updatedUser.username,
-            avatar: updatedUser.avatar,
-        };
-        localStorage.setItem(`user_profile_${updatedUser.walletAddress}`, JSON.stringify(profileToSave));
-        return updatedUser;
-    });
-    addToast('Profile updated successfully!', 'success');
+  const updateUserProfile = async (profileData: { username?: string; avatar?: string }) => {
+    if (!user) {
+      addToast("Connect your wallet to update your profile.", 'error');
+      return;
+    }
+    try {
+      const userRef = doc(db, "users", user.walletAddress);
+      await setDoc(userRef, profileData, { merge: true });
+
+      setUser(prevUser => {
+          if (!prevUser) return null;
+          const updatedUser = { ...prevUser, ...profileData };
+          const profileToSave = {
+              username: updatedUser.username,
+              avatar: updatedUser.avatar,
+          };
+          localStorage.setItem(`user_profile_${updatedUser.walletAddress}`, JSON.stringify(profileToSave));
+          return updatedUser;
+      });
+      addToast('Profile updated successfully!', 'success');
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      addToast('Failed to update profile.', 'error');
+    }
   };
 
   return (
