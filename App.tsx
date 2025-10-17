@@ -16,6 +16,7 @@ import GuideButton from './components/GuideButton';
 import { guideConfig } from './guideConfig';
 import Sidebar from './components/Sidebar';
 import ToastContainer from './components/ToastContainer';
+import Footer from './components/Footer';
 
 const AppContent: React.FC = () => {
     const location = useLocation();
@@ -23,6 +24,8 @@ const AppContent: React.FC = () => {
 
     const pathParts = location.pathname.split('/');
     const guideKey = pathParts[1] === 'project' ? 'project' : pathParts[1] || 'explore';
+
+    const isDashboardPage = location.pathname === '/dashboard';
 
     useEffect(() => {
         const hasViewed = localStorage.getItem(`guide_${guideKey}_viewed`);
@@ -59,6 +62,7 @@ const AppContent: React.FC = () => {
                         <Route path="/waitlist" element={<WaitlistPage />} />
                     </Routes>
                 </main>
+                {isDashboardPage && <Footer />}
             </div>
             <BottomNavBar />
             <ToastContainer />
