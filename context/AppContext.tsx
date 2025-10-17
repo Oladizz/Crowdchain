@@ -198,7 +198,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             }
         }
         return p;
-    }))
+    }));
+    if (status === 'In Review') {
+        addToast('Milestone submitted for DAO review.', 'info');
+    }
   };
 
   const createProject = (projectData: GeneratedProjectData) => {
