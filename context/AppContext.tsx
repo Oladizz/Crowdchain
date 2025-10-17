@@ -1,5 +1,7 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { doc, setDoc, collection, addDoc, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 import { Project, Proposal, User, ProjectCategory } from '../types';
 
 interface GeneratedProjectData {
@@ -57,6 +59,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       root.classList.remove('dark');
     }
   }, [theme]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const projectsCollection = collection(db, 'projects');
+      const projectSnapshot = await getDocs(projectsCollection);
+      const projectList = projectSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
+      setProjects(projectList);
+    };
+
+    const fetchProposals = async () => {
+      const proposalsCollection = collection(db, 'proposals');
+      const proposalSnapshot = await getDocs(proposalsCollection);
+      const proposalList = proposalSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Proposal));
+      setProposals(proposalList);
+    };
+
+    fetchProjects();
+    fetchProposals();
+  }, []);
 
   const addToast = (message: string, type: Toast['type']) => {
       const id = Date.now();
@@ -224,14 +245,50 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const createProject = (projectData: GeneratedProjectData) => {
+  const createProject = async (projectData: GeneratedProjectData) => {
     if (!user) {
-        addToast("Connect your wallet to create a project.", 'error');
-        return;
+      addToast("Connect your wallet to create a project.", 'error');
+      return;
     }
-    const newProjectId = (projects.length + 1 + Date.now()).toString();
-    const fundingGoal = projectData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0);
-    const newProject: Project = {
+    try {
+      const fundingGoal = projectData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0);
+
+      const projectDocRef = await addDoc(collection(db, "projects"), {
+        name: projectData.name,
+        creator: user.username || user.walletAddress,
+        creatorWallet: user.walletAddress,
+        image: `https://picsum.photos/seed/${Date.now()}/800/600`,
+        description: projectData.description,
+        category: projectData.category,
+        fundingGoal: fundingGoal,
+        amountRaised: 0,
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        milestones: projectData.milestones.map((m, index) => ({
+          id: index + 1,
+          title: m.title,
+          description: m.description,
+          fundsRequired: m.fundsRequired,
+          status: 'Pending',
+        })),
+        daoStatus: 'Pending',
+        updates: [],
+      });
+
+      const newProjectId = projectDocRef.id;
+
+      const proposalDocRef = await addDoc(collection(db, "proposals"), {
+        projectId: newProjectId,
+        projectName: projectData.name,
+        type: 'New Project',
+        description: `Proposal to approve the new project: "${projectData.name}".`,
+        votesFor: 0,
+        votesAgainst: 0,
+        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      });
+
+      // This part will be updated when we fetch data from Firestore
+      // For now, we'll optimistically update the UI
+      const newProject: Project = {
         id: newProjectId,
         name: projectData.name,
         creator: user.username || user.walletAddress,
@@ -251,9 +308,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         })),
         daoStatus: 'Pending',
         updates: [],
-    };
-    const newProposal: Proposal = {
-        id: `p${proposals.length + 1 + Date.now()}`,
+      };
+      const newProposal: Proposal = {
+        id: proposalDocRef.id,
         projectId: newProjectId,
         projectName: newProject.name,
         type: 'New Project',
@@ -261,14 +318,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         votesFor: 0,
         votesAgainst: 0,
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    };
-    setProjects(prevProjects => [...prevProjects, newProject]);
-    setProposals(prevProposals => [newProposal, ...prevProposals]);
-    setUser(prevUser => {
-        if (!prevUser) return null;
-        return { ...prevUser, createdProjectIds: [...prevUser.createdProjectIds, newProjectId] };
-    });
-    addToast('Project submitted to DAO for review!', 'success');
+      };
+      setProjects(prevProjects => [...prevProjects, newProject]);
+      setProposals(prevProposals => [newProposal, ...prevProposals]);
+
+      addToast('Project submitted to DAO for review!', 'success');
+    } catch (error) {
+      console.error("Error creating project:", error);
+      addToast('Failed to create project.', 'error');
+    }
   };
 
   const updateUserProfile = (profileData: { username?: string; avatar?: string }) => {
