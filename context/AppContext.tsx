@@ -91,16 +91,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   const connectWallet = async (isAutoConnect = false) => {
+    console.log('Attempting to connect wallet. Auto-connect:', isAutoConnect);
     if (!(window as any).ethereum) {
+      console.error('No web3 wallet detected.');
       if (!isAutoConnect) addToast('Please install a web3 wallet!', 'error');
       return;
     }
 
     try {
+      console.log('Requesting accounts...');
       const accounts = await (window as any).ethereum.request({
         method: isAutoConnect ? 'eth_accounts' : 'eth_requestAccounts'
       });
+      console.log('Accounts received:', accounts);
+
       if (!accounts || accounts.length === 0) {
+        console.warn('No accounts found.');
         if (!isAutoConnect) addToast('No accounts found.', 'error');
         return;
       }
@@ -147,17 +153,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const userSnap = await getDoc(userRef);
 
       if (userSnap.exists()) {
+        console.log('User found in Firestore:', userSnap.data());
         setUser(userSnap.data() as User);
       } else {
+        console.log('User not found in Firestore, creating new user...');
         const newUser: User = {
           walletAddress,
           createdProjectIds: [],
           fundedProjects: [],
         };
         await setDoc(userRef, newUser);
+        console.log('New user created:', newUser);
         setUser(newUser);
       }
       localStorage.setItem('walletAddress', walletAddress);
+      console.log('Wallet address saved to localStorage.');
       addToast('Wallet connected!', 'success');
 
     } catch (error) {
@@ -397,7 +407,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
     try {
       const userRef = doc(db, "users", user.walletAddress);
-      await setDoc(userRef, profileData, { merge: true });
+      await updateDoc(userRef, profileData);
 
       setUser(prevUser => {
           if (!prevUser) return null;
