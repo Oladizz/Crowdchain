@@ -19,15 +19,20 @@ import { guideConfig } from './guideConfig';
 import Sidebar from './components/Sidebar';
 import ToastContainer from './components/ToastContainer';
 import Footer from './components/Footer';
+import LandingPage from './pages/LandingPage';
 
-const AppContent: React.FC = () => {
+const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const location = useLocation();
     const [activeGuide, setActiveGuide] = useState<string | null>(null);
-
     const isDashboardPage = location.pathname === '/dashboard';
 
     const pathParts = location.pathname.split('/');
-    const guideKey = pathParts[1] === 'project' ? 'project' : (pathParts[1] || 'home');
+    let guideKey = pathParts[1] || 'home';
+    if (pathParts[1] === 'project') {
+        guideKey = 'project';
+    } else if (pathParts[1] === 'home') {
+        guideKey = 'home';
+    }
 
 
     useEffect(() => {
@@ -54,17 +59,7 @@ const AppContent: React.FC = () => {
             <div className="flex-1 flex flex-col md:pl-64">
                 <Header />
                 <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 md:pb-6">
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/explore" element={<ExplorePage />} />
-                        <Route path="/project/:id" element={<ProjectDetailPage />} />
-                        <Route path="/dao" element={<DaoPage />} />
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/create" element={<CreateProjectPage />} />
-                        <Route path="/about" element={<AboutPage />} />
-                        <Route path="/contact" element={<ContactPage />} />
-                        <Route path="/waitlist" element={<WaitlistPage />} />
-                    </Routes>
+                    {children}
                 </main>
                 {isDashboardPage && <Footer />}
             </div>
@@ -79,6 +74,24 @@ const AppContent: React.FC = () => {
             )}
             <GuideButton onClick={startGuide} />
         </div>
+    );
+}
+
+
+const AppContent: React.FC = () => {
+    return (
+        <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<MainLayout><HomePage /></MainLayout>} />
+            <Route path="/explore" element={<MainLayout><ExplorePage /></MainLayout>} />
+            <Route path="/project/:id" element={<MainLayout><ProjectDetailPage /></MainLayout>} />
+            <Route path="/dao" element={<MainLayout><DaoPage /></MainLayout>} />
+            <Route path="/dashboard" element={<MainLayout><DashboardPage /></MainLayout>} />
+            <Route path="/create" element={<MainLayout><CreateProjectPage /></MainLayout>} />
+            <Route path="/about" element={<MainLayout><AboutPage /></MainLayout>} />
+            <Route path="/contact" element={<MainLayout><ContactPage /></MainLayout>} />
+            <Route path="/waitlist" element={<MainLayout><WaitlistPage /></MainLayout>} />
+        </Routes>
     );
 };
 
