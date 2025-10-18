@@ -1,4 +1,5 @@
 
+
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
@@ -195,11 +196,13 @@ const HomePage: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
               {Object.values(ProjectCategory).map(category => (
                   <Link 
-                      to={`/explore?category=${encodeURIComponent(category)}`} 
+                      // FIX: Argument of type 'unknown' is not assignable to parameter of type 'string | number | boolean'. Use template literal and cast category.
+                      to={`/explore?category=${encodeURIComponent(category as ProjectCategory)}`} 
                       key={category}
                       className="group bg-brand-surface rounded-lg p-6 flex flex-col items-center justify-center text-center aspect-square transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-purple/30"
                   >
-                      {categoryIcons[category]}
+                      {/* FIX: Type 'unknown' cannot be used as an index type. Cast category to use as index. */}
+                      {categoryIcons[category as ProjectCategory]}
                       <p className="mt-4 font-semibold text-white transition-colors group-hover:text-brand-blue-light">{category}</p>
                   </Link>
               ))}
