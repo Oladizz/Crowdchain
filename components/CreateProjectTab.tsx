@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { ProjectCategory } from '../context/types';
+import { ProjectCategory } from '../types';
 import Button from './Button';
 import Spinner from './Spinner';
 import { useAppContext } from '../context/AppContext';

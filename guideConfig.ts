@@ -1,4 +1,3 @@
-
 export interface GuideStep {
   elementSelector: string;
   title: string;
@@ -6,33 +5,6 @@ export interface GuideStep {
 }
 
 export const guideConfig: Record<string, GuideStep[]> = {
-  home: [
-    {
-      elementSelector: '[data-guide="welcome"]',
-      title: 'Welcome to CrowdChain!',
-      content: "This is a decentralized platform where you can discover, fund, and govern innovative projects. Let's take a quick tour.",
-    },
-    {
-      elementSelector: '[data-guide="connect-wallet"]',
-      title: 'Connect Your Wallet',
-      content: 'To get started, connect your wallet. This is your identity on CrowdChain, allowing you to fund projects and vote in the DAO.',
-    },
-    {
-      elementSelector: '[data-guide="spotlight"]',
-      title: 'Spotlight Projects',
-      content: "Here you'll find featured projects that are gaining traction in the community.",
-    },
-    {
-      elementSelector: '[data-guide="explore-link"]',
-      title: 'Explore More Projects',
-      content: 'Click "View All" to see every project on the platform. You can search by name or filter by category there.',
-    },
-    {
-      elementSelector: '[data-guide="nav-bar"]',
-      title: 'Navigate the App',
-      content: 'Use the bottom bar to switch between exploring projects, participating in DAO governance, and viewing your personal dashboard.',
-    }
-  ],
   explore: [
     {
       elementSelector: '[data-guide="welcome"]',

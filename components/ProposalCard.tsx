@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Proposal } from '../context/types';
+import { Proposal } from '../types';
 import Button from './Button';
 import { useAppContext } from '../context/AppContext';
 

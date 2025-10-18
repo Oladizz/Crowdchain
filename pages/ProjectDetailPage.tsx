@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
 import Button from '../components/Button';
-import { Milestone } from '../context/types';
+import { Milestone } from '../types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 
@@ -135,11 +135,6 @@ const ProjectDetailPage: React.FC = () => {
                     <div>
                         <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
                         <p className="text-xs sm:text-sm text-brand-muted break-words">{milestone.description}</p>
-                        {milestone.proof && (
-                            <a href={milestone.proof} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-blue-light hover:underline mt-1 inline-block">
-                                View Proof
-                            </a>
-                        )}
                     </div>
                 </li>
               ))}

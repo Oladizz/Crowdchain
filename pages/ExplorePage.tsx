@@ -1,29 +1,17 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
-import { ProjectCategory } from '../context/types';
+import { ProjectCategory } from '../types';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
 import StatCard from '../components/StatCard';
 
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
-
 const ExplorePage: React.FC = () => {
-  const query = useQuery();
   const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState(query.get('category') || 'All');
+  const [category, setCategory] = useState('All');
   
   const { projects } = useAppContext();
-  
-  useEffect(() => {
-    const queryCategory = query.get('category');
-    if (queryCategory && Object.values(ProjectCategory).includes(queryCategory as ProjectCategory)) {
-        setCategory(queryCategory);
-    }
-  }, [query]);
   
   const approvedProjects = useMemo(() => projects.filter(p => p.daoStatus === 'Approved'), [projects]);
 
@@ -114,7 +102,7 @@ const ExplorePage: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-grow w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 </div>

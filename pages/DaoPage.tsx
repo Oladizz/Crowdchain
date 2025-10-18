@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import ProposalCard from '../components/ProposalCard';
-import { Proposal } from '../context/types';
+import { Proposal } from '../types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
