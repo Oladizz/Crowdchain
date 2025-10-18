@@ -6,6 +6,13 @@ export interface GuideStep {
 }
 
 export const guideConfig: Record<string, GuideStep[]> = {
+  landing: [
+    {
+      elementSelector: '[data-guide="enter-app"]',
+      title: 'Welcome to CrowdChain!',
+      content: 'This is the gateway to a new era of decentralized crowdfunding. Click here to enter the platform and explore innovative projects.'
+    }
+  ],
   home: [
     {
       elementSelector: '[data-guide="welcome"]',

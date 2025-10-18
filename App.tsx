@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import LandingPage from './pages/LandingPage';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
@@ -24,10 +25,11 @@ const AppContent: React.FC = () => {
     const location = useLocation();
     const [activeGuide, setActiveGuide] = useState<string | null>(null);
 
-    const pathParts = location.pathname.split('/');
-    const guideKey = pathParts[1] === 'project' ? 'project' : pathParts[1] || 'home';
-
+    const isLandingPage = location.pathname === '/';
     const isDashboardPage = location.pathname === '/dashboard';
+
+    const pathParts = location.pathname.split('/');
+    const guideKey = pathParts[1] === 'project' ? 'project' : (location.pathname === '/' ? 'landing' : (pathParts[1] || 'home'));
 
     useEffect(() => {
         const hasViewed = localStorage.getItem(`guide_${guideKey}_viewed`);
@@ -49,12 +51,13 @@ const AppContent: React.FC = () => {
 
     return (
         <div className="flex min-h-screen bg-white dark:bg-brand-bg font-sans text-gray-800 dark:text-white transition-colors duration-300">
-            <Sidebar />
-            <div className="flex-1 flex flex-col md:pl-64">
-                <Header />
-                <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 md:pb-6">
+            {!isLandingPage && <Sidebar />}
+            <div className={`flex-1 flex flex-col ${!isLandingPage ? 'md:pl-64': ''}`}>
+                {!isLandingPage && <Header />}
+                <main className={`flex-grow ${isLandingPage ? 'w-full' : 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 md:pb-6'}`}>
                     <Routes>
-                        <Route path="/" element={<HomePage />} />
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/home" element={<HomePage />} />
                         <Route path="/explore" element={<ExplorePage />} />
                         <Route path="/project/:id" element={<ProjectDetailPage />} />
                         <Route path="/dao" element={<DaoPage />} />
@@ -65,9 +68,9 @@ const AppContent: React.FC = () => {
                         <Route path="/waitlist" element={<WaitlistPage />} />
                     </Routes>
                 </main>
-                {isDashboardPage && <Footer />}
+                {isDashboardPage && !isLandingPage && <Footer />}
             </div>
-            <BottomNavBar />
+            {!isLandingPage && <BottomNavBar />}
             <ToastContainer />
             {activeGuide && guideConfig[activeGuide] && (
                 <UserGuide 
@@ -76,7 +79,7 @@ const AppContent: React.FC = () => {
                     onClose={closeGuide} 
                 />
             )}
-            <GuideButton onClick={startGuide} />
+            {!isLandingPage && <GuideButton onClick={startGuide} />}
         </div>
     );
 };
