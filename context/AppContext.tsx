@@ -157,6 +157,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         await setDoc(userRef, newUser);
         setUser(newUser);
       }
+      localStorage.setItem('walletAddress', walletAddress);
       addToast('Wallet connected!', 'success');
 
     } catch (error) {
@@ -167,12 +168,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('walletAddress');
     addToast('Wallet disconnected.', 'info');
   };
 
   useEffect(() => {
     const autoConnect = async () => {
-        if ((window as any).ethereum) {
+        if ((window as any).ethereum && localStorage.getItem('walletAddress')) {
             await connectWallet(true);
         }
     };
