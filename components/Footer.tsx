@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -17,7 +18,7 @@ const Footer: React.FC = () => {
                         &copy; {new Date().getFullYear()} CrowdChain. All rights reserved.
                     </div>
                     <nav className="flex space-x-6 text-sm flex-wrap justify-center">
-                        <Link to="/home" className="text-brand-muted hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Home</Link>
+                        <Link to="/" className="text-brand-muted hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Home</Link>
                         <Link to="/explore" className="text-brand-muted hover:text-gray-900 dark:hover:text-white transition-colors duration-300">Explore</Link>
                         <Link to="/dao" className="text-brand-muted hover:text-gray-900 dark:hover:text-white transition-colors duration-300">DAO</Link>
                         <Link to="/about" className="text-brand-muted hover:text-gray-900 dark:hover:text-white transition-colors duration-300">About</Link>

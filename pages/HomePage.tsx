@@ -109,6 +109,7 @@ const HomePage: React.FC = () => {
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in" style={{ animationDelay: '1s' }}>
           <Link to="/explore"><Button variant="primary" className="w-full sm:w-auto text-base px-8 py-3">Explore Projects</Button></Link>
           <Link to="/create"><Button variant="secondary" className="w-full sm:w-auto text-base px-8 py-3">Start a Project</Button></Link>
+          <Link to="/waitlist"><Button variant="secondary" className="w-full sm:w-auto text-base px-8 py-3">Join Waitlist</Button></Link>
         </div>
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto text-left animate-fade-in" style={{ animationDelay: '1.2s' }}>
             <div className="p-4 rounded-lg">

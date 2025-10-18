@@ -24,7 +24,7 @@ const Header: React.FC = () => {
     <header className="bg-white/80 dark:bg-brand-bg/80 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-200 dark:border-brand-surface/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <NavLink to="/home" className="flex items-center space-x-2 md:hidden">
+          <NavLink to="/" className="flex items-center space-x-2 md:hidden">
             <BlockIcon />
             <span className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white tracking-wider">CrowdChain</span>
           </NavLink>

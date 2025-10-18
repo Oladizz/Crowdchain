@@ -47,7 +47,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon }) => {
   const activeClasses = 'bg-brand-button text-white';
 
   return (
-    <NavLink to={to} className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`} end={to === "/home" || to === "/explore"}>
+    <NavLink to={to} className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`} end={to === "/"}>
       <Icon className="h-5 w-5 mr-3" />
       <span>{label}</span>
     </NavLink>
@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
                 <span className="text-xl font-bold text-white tracking-wider">CrowdChain</span>
             </div>
             <nav className="flex-1 flex flex-col space-y-2">
-                <NavItem to="/home" label="Home" icon={HomeIcon} />
+                <NavItem to="/" label="Home" icon={HomeIcon} />
                 <NavItem to="/explore" label="Explore" icon={CompassIcon} />
                 <NavItem to="/dao" label="DAO Governance" icon={DaoIcon} />
                 {user && <NavItem to="/dashboard" label="Dashboard" icon={UserIcon} />}
