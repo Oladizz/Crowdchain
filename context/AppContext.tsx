@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { doc, setDoc, collection, addDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, addDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { Project, Proposal, User, ProjectCategory } from '../types';
 
@@ -90,16 +90,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
-  const connectWallet = async () => {
+  const connectWallet = async (isAutoConnect = false) => {
     if (!(window as any).ethereum) {
-      addToast('Please install a web3 wallet!', 'error');
+      if (!isAutoConnect) addToast('Please install a web3 wallet!', 'error');
       return;
     }
 
     try {
-      const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await (window as any).ethereum.request({
+        method: isAutoConnect ? 'eth_accounts' : 'eth_requestAccounts'
+      });
       if (!accounts || accounts.length === 0) {
-        addToast('No accounts found.', 'error');
+        if (!isAutoConnect) addToast('No accounts found.', 'error');
         return;
       }
       const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
@@ -140,16 +142,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
 
       const walletAddress = accounts[0];
-      const savedProfileJSON = localStorage.getItem(`user_profile_${walletAddress}`);
-      const savedProfile = savedProfileJSON ? JSON.parse(savedProfileJSON) : {};
       
-      setUser({
-        walletAddress,
-        createdProjectIds: [], // In real app, this would be fetched
-        fundedProjects: [], // In real app, this would be fetched
-        ...savedProfile,
-      });
-      localStorage.setItem('walletAddress', walletAddress);
+      const userRef = doc(db, 'users', walletAddress);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        setUser(userSnap.data() as User);
+      } else {
+        const newUser: User = {
+          walletAddress,
+          createdProjectIds: [],
+          fundedProjects: [],
+        };
+        await setDoc(userRef, newUser);
+        setUser(newUser);
+      }
       addToast('Wallet connected!', 'success');
 
     } catch (error) {
@@ -160,18 +167,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('walletAddress');
     addToast('Wallet disconnected.', 'info');
   };
 
   useEffect(() => {
     const autoConnect = async () => {
-        if ((window as any).ethereum && localStorage.getItem('walletAddress')) {
-            await connectWallet();
+        if ((window as any).ethereum) {
+            await connectWallet(true);
         }
     };
     autoConnect();
-
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
         logout();
@@ -210,6 +215,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const newAmount = project.amountRaised + amount;
         await updateDoc(projectRef, { amountRaised: newAmount });
 
+        const userRef = doc(db, 'users', user.walletAddress);
+        const updatedFundedProjects = [...user.fundedProjects, { projectId, amount }];
+        await updateDoc(userRef, { fundedProjects: updatedFundedProjects });
+
+        setUser({ ...user, fundedProjects: updatedFundedProjects });
         setProjects(prevProjects =>
           prevProjects.map(p =>
             p.id === projectId ? { ...p, amountRaised: newAmount } : p
@@ -366,6 +376,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setProjects(prevProjects => [...prevProjects, newProject]);
       setProposals(prevProposals => [newProposal, ...prevProposals]);
 
+      const userRef = doc(db, 'users', user.walletAddress);
+      const updatedCreatedProjectIds = [...user.createdProjectIds, newProjectId];
+      await updateDoc(userRef, { createdProjectIds: updatedCreatedProjectIds });
+      setUser({ ...user, createdProjectIds: updatedCreatedProjectIds });
+
       addToast('Project submitted to DAO for review!', 'success');
     } catch (error) {
       console.error("Error creating project:", error);
@@ -384,13 +399,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
       setUser(prevUser => {
           if (!prevUser) return null;
-          const updatedUser = { ...prevUser, ...profileData };
-          const profileToSave = {
-              username: updatedUser.username,
-              avatar: updatedUser.avatar,
-          };
-          localStorage.setItem(`user_profile_${updatedUser.walletAddress}`, JSON.stringify(profileToSave));
-          return updatedUser;
+          return { ...prevUser, ...profileData };
       });
       addToast('Profile updated successfully!', 'success');
     } catch (error) {
