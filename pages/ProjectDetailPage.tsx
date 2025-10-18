@@ -135,6 +135,11 @@ const ProjectDetailPage: React.FC = () => {
                     <div>
                         <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
                         <p className="text-xs sm:text-sm text-brand-muted break-words">{milestone.description}</p>
+                        {milestone.proof && (
+                            <a href={milestone.proof} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-blue-light hover:underline mt-1 inline-block">
+                                View Proof
+                            </a>
+                        )}
                     </div>
                 </li>
               ))}

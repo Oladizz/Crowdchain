@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 
 const MailIcon: React.FC<{className?: string}> = ({className}) => (
@@ -45,6 +47,13 @@ const WaitlistPage: React.FC = () => {
                         : "Be the first to know about our upcoming native token launch, exclusive platform features, and early access opportunities. Sign up now!"
                     }
                 </p>
+                {submitted && (
+                    <div className="mt-8">
+                        <Link to="/explore">
+                            <Button variant="primary">Continue Exploring</Button>
+                        </Link>
+                    </div>
+                )}
             </div>
 
             {!submitted && (

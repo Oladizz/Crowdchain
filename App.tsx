@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
+import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import DaoPage from './pages/DaoPage';
 import Header from './components/Header';
 import BottomNavBar from './components/BottomNavBar';
 import DashboardPage from './pages/DashboardPage';
+import CreateProjectPage from './pages/CreateProjectPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import WaitlistPage from './pages/WaitlistPage';
@@ -23,7 +25,7 @@ const AppContent: React.FC = () => {
     const [activeGuide, setActiveGuide] = useState<string | null>(null);
 
     const pathParts = location.pathname.split('/');
-    const guideKey = pathParts[1] === 'project' ? 'project' : pathParts[1] || 'explore';
+    const guideKey = pathParts[1] === 'project' ? 'project' : pathParts[1] || 'home';
 
     const isDashboardPage = location.pathname === '/dashboard';
 
@@ -52,11 +54,12 @@ const AppContent: React.FC = () => {
                 <Header />
                 <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 md:pb-6">
                     <Routes>
-                        <Route path="/" element={<ExplorePage />} />
+                        <Route path="/" element={<HomePage />} />
                         <Route path="/explore" element={<ExplorePage />} />
                         <Route path="/project/:id" element={<ProjectDetailPage />} />
                         <Route path="/dao" element={<DaoPage />} />
                         <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/create" element={<CreateProjectPage />} />
                         <Route path="/about" element={<AboutPage />} />
                         <Route path="/contact" element={<ContactPage />} />
                         <Route path="/waitlist" element={<WaitlistPage />} />
