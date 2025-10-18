@@ -17,5 +17,13 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+let app;
+if (firebaseConfig.projectId) {
+  app = initializeApp(firebaseConfig);
+} else {
+  console.error("Firebase project ID is missing. Please check your .env file.");
+  // You might want to throw an error here or handle it in a way that
+  // doesn't break the entire app, e.g., by using a mock database.
+}
+
+export const db = app ? getFirestore(app) : null;
