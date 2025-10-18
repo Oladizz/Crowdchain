@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { Milestone } from '../types';
+import { Milestone } from '../context/types';
 import Button from './Button';
 import Modal from './Modal';
 

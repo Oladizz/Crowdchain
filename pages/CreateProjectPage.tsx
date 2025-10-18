@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleGenAI, Type } from '@google/genai';
-import { ProjectCategory } from '../types';
+import { ProjectCategory } from '../context/types';
 import Button from '../components/Button';
 import Spinner from '../components/Spinner';
 import { useAppContext } from '../context/AppContext';

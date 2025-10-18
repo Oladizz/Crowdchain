@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
-import { ProjectCategory } from '../types';
+import { ProjectCategory } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
 import StatCard from '../components/StatCard';

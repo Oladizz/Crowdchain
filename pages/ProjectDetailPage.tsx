@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
 import Button from '../components/Button';
-import { Milestone } from '../types';
+import { Milestone } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 

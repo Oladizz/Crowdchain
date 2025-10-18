@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import StatCard from '../components/StatCard';
 import ProjectCard from '../components/ProjectCard';
 import { useAppContext } from '../context/AppContext';
-import { ProjectCategory } from '../types';
+import { ProjectCategory } from '../context/types';
 
 // --- SVG Icons ---
 const ChevronRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
