@@ -111,15 +111,15 @@ const HomePage: React.FC = () => {
           <Link to="/waitlist"><Button variant="secondary" className="w-full sm:w-auto text-base px-8 py-3">Join Waitlist</Button></Link>
         </div>
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto text-left animate-fade-in" style={{ animationDelay: '1.2s' }}>
-            <div className="p-4 rounded-lg">
+            <div className="p-4 rounded-lg border border-transparent dark:border-white/10">
                 <h3 className="font-bold text-white">DAO Governed</h3>
                 <p className="text-sm text-brand-muted mt-1">Projects are approved by the community, for the community.</p>
             </div>
-            <div className="p-4 rounded-lg">
+            <div className="p-4 rounded-lg border border-transparent dark:border-white/10">
                 <h3 className="font-bold text-white">Milestone Payouts</h3>
                 <p className="text-sm text-brand-muted mt-1">Funds are released on milestone completion, ensuring accountability.</p>
             </div>
-            <div className="p-4 rounded-lg">
+            <div className="p-4 rounded-lg border border-transparent dark:border-white/10">
                 <h3 className="font-bold text-white">Fully Transparent</h3>
                 <p className="text-sm text-brand-muted mt-1">All funding and voting activities are recorded on-chain.</p>
             </div>
@@ -140,22 +140,22 @@ const HomePage: React.FC = () => {
         <h2 className="text-3xl font-bold text-white mb-2">A Simple, Powerful Process</h2>
         <p className="text-lg text-brand-muted mb-12">From idea to reality in four community-driven steps.</p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
                 <PencilIcon />
                 <h3 className="text-lg font-semibold text-white">1. Submit</h3>
                 <p className="text-sm text-brand-muted mt-2">Creators submit detailed project proposals with clear milestones.</p>
             </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
                 <VoteIcon />
                 <h3 className="text-lg font-semibold text-white">2. Vote</h3>
                 <p className="text-sm text-brand-muted mt-2">The DAO community votes to approve projects for funding.</p>
             </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
                 <CashIcon />
                 <h3 className="text-lg font-semibold text-white">3. Fund</h3>
                 <p className="text-sm text-brand-muted mt-2">Approved projects are listed for anyone to back and support.</p>
             </div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
                 <RocketIcon />
                 <h3 className="text-lg font-semibold text-white">4. Build</h3>
                 <p className="text-sm text-brand-muted mt-2">Funds unlock as milestones are met and verified by the DAO.</p>
@@ -204,7 +204,7 @@ const HomePage: React.FC = () => {
                       // FIX: Argument of type 'unknown' is not assignable to parameter of type 'string | number | boolean'. Use template literal and cast category.
                       to={`/explore?category=${encodeURIComponent(category as ProjectCategory)}`} 
                       key={category}
-                      className="group bg-brand-surface rounded-lg p-6 flex flex-col items-center justify-center text-center aspect-square transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-purple/30"
+                      className="group bg-brand-surface rounded-lg p-6 flex flex-col items-center justify-center text-center aspect-square transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-purple/30 border border-white/10"
                   >
                       {/* FIX: Type 'unknown' cannot be used as an index type. Cast category to use as index. */}
                       {categoryIcons[category as ProjectCategory]}
@@ -238,7 +238,7 @@ const HomePage: React.FC = () => {
       )}
       
       {/* Final CTA Section */}
-      <section className="text-center bg-brand-surface rounded-lg p-8 sm:p-12 animate-slide-in-bottom" style={{ animationDelay: '1.2s' }}>
+      <section className="text-center bg-brand-surface rounded-lg p-8 sm:p-12 animate-slide-in-bottom border border-white/10" style={{ animationDelay: '1.2s' }}>
           <h2 className="text-3xl font-bold text-white">Ready to Dive In?</h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-brand-muted">
               Explore groundbreaking projects or bring your own vision to the community.

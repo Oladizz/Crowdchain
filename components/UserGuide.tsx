@@ -102,9 +102,9 @@ const UserGuide: React.FC<UserGuideProps> = ({ steps, guideKey, onClose }) => {
             <div className="flex items-center space-x-2">
                  <span className="text-xs text-brand-muted">{currentStep + 1} / {steps.length}</span>
                  {currentStep > 0 && (
-                    <button onClick={handlePrev} className="text-xs px-3 py-1 rounded-full bg-brand-button hover:bg-brand-button-hover transition-colors">Prev</button>
+                    <button onClick={handlePrev} className="text-xs px-3 py-1 rounded-full bg-brand-button hover:bg-brand-button-hover transition-colors border border-brand-button-hover">Prev</button>
                  )}
-                 <button onClick={handleNext} className="text-xs px-3 py-1 rounded-full bg-brand-blue hover:bg-opacity-80 text-white font-semibold transition-colors">
+                 <button onClick={handleNext} className="text-xs px-3 py-1 rounded-full bg-brand-blue hover:bg-opacity-80 text-white font-semibold transition-colors border border-brand-blue-light">
                     {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
                  </button>
             </div>

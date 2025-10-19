@@ -31,9 +31,9 @@ const Header: React.FC = () => {
           <div className="w-full flex justify-end">
             {user ? (
                <div className="flex items-center space-x-2">
-                 <Link to={`/profile/${user.walletAddress}`} className="flex items-center space-x-2 text-xs sm:text-sm font-medium bg-brand-surface text-brand-muted px-2 py-1.5 rounded-full hover:text-white transition-colors">
+                 <Link to={`/profile/${user.walletAddress}`} className="flex items-center space-x-2 text-xs sm:text-sm font-medium bg-brand-surface text-brand-muted px-2 py-1.5 rounded-full hover:text-white transition-colors border border-brand-surface hover:border-brand-muted">
                     {user.avatar ? (
-                        <img src={user.avatar} alt="user avatar" className="w-6 h-6 rounded-full object-cover"/>
+                        <img src={user.avatar} alt="user avatar" className="w-6 h-6 rounded-full object-cover border border-brand-surface"/>
                     ) : (
                         <UserIcon className="w-5 h-5 text-brand-muted" />
                     )}

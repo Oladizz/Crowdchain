@@ -46,9 +46,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, creatorUsername, cre
         <div className="mt-3">
             <a href={`#/profile/${project.creatorWallet}`} onClick={handleCreatorClick} className="flex items-center space-x-2 group/creator">
                 {creatorAvatar ? (
-                    <img src={creatorAvatar} alt={creatorUsername} className="w-6 h-6 rounded-full object-cover" />
+                    <img src={creatorAvatar} alt={creatorUsername} className="w-6 h-6 rounded-full object-cover border border-brand-bg" />
                 ) : (
-                    <div className="w-6 h-6 rounded-full bg-brand-bg flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-brand-bg flex items-center justify-center border border-brand-surface">
                         <UserIcon className="w-4 h-4 text-brand-muted" />
                     </div>
                 )}

@@ -48,7 +48,7 @@ const DashboardPage: React.FC = () => {
     const TabButton: React.FC<{tabName: Tab, label: string}> = ({ tabName, label }) => (
         <button
             onClick={() => setActiveTab(tabName)}
-            className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap ${activeTab === tabName ? 'bg-brand-button text-white' : 'text-brand-muted hover:bg-brand-surface hover:text-white'}`}
+            className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap border ${activeTab === tabName ? 'bg-brand-button text-white border-brand-button-hover' : 'text-brand-muted hover:bg-brand-surface hover:text-white border-transparent'}`}
         >
             {label}
         </button>
@@ -62,9 +62,9 @@ const DashboardPage: React.FC = () => {
                     <p className="text-brand-muted mt-1 font-mono text-sm break-words">{user.walletAddress}</p>
                 </div>
                  {user.avatar ? (
-                    <img src={user.avatar} alt="User Avatar" className="w-16 h-16 rounded-full object-cover bg-brand-surface self-start sm:self-center flex-shrink-0" />
+                    <img src={user.avatar} alt="User Avatar" className="w-16 h-16 rounded-full object-cover bg-brand-surface self-start sm:self-center flex-shrink-0 border-2 border-brand-surface" />
                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-brand-surface flex items-center justify-center self-start sm:self-center flex-shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-brand-surface flex items-center justify-center self-start sm:self-center flex-shrink-0 border-2 border-brand-surface">
                         <UserIcon className="w-10 h-10 text-brand-muted" />
                     </div>
                  )}

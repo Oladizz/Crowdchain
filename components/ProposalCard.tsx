@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Proposal } from '../context/types';
@@ -36,7 +37,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, onVoteClick }) =>
       
       <div className="mt-4">
         <p className="text-sm font-medium text-brand-muted mb-2">Voting Progress</p>
-        <div className="flex w-full h-3 sm:h-4 bg-red-900/50 rounded-full overflow-hidden">
+        <div className="flex w-full h-3 sm:h-4 bg-red-900/50 rounded-full overflow-hidden border border-white/10">
             <div className="bg-green-500 h-full" style={{width: `${forPercentage}%`}}></div>
         </div>
         <div className="flex justify-between mt-2 text-xs">

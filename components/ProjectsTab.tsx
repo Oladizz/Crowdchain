@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -89,7 +90,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Milestone Management</h3>
                             <ul className="space-y-3">
                                 {project.milestones.map(milestone => (
-                                    <li key={milestone.id} className="flex flex-col sm:flex-row justify-between sm:items-center p-3 bg-gray-200 dark:bg-white/5 rounded-lg gap-3">
+                                    <li key={milestone.id} className="flex flex-col sm:flex-row justify-between sm:items-center p-3 bg-gray-200 dark:bg-white/5 rounded-lg gap-3 border border-gray-300 dark:border-white/10">
                                         <div>
                                             <p className="font-medium text-gray-900 dark:text-white break-words">{milestone.title}</p>
                                             <p className="text-xs text-brand-muted break-words">{milestone.description}</p>

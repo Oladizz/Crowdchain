@@ -18,7 +18,7 @@ const GuideButton: React.FC<GuideButtonProps> = ({ onClick }) => {
       className="fixed bottom-20 sm:bottom-4 right-4 z-[99]"
       aria-label="Show application guide"
     >
-        <div className="bg-brand-purple text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-brand-blue transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-bg focus:ring-brand-blue">
+        <div className="bg-brand-purple text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-brand-blue transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-bg focus:ring-brand-blue border-2 border-white/20">
             <QuestionMarkIcon />
         </div>
     </button>

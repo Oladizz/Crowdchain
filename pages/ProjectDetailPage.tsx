@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
@@ -83,7 +84,7 @@ const ProjectDetailPage: React.FC = () => {
             </span>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl break-words">{project.name}</h1>
           </div>
-          <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-xl shadow-2xl" />
+          <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-xl shadow-2xl border border-white/10" />
           
           <div className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Project Story</h2>

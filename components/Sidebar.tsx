@@ -42,9 +42,9 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon }) => {
-  const baseClasses = 'flex items-center px-4 py-3 text-sm font-medium rounded-full transition-colors duration-200';
+  const baseClasses = 'flex items-center px-4 py-3 text-sm font-medium rounded-full transition-colors duration-200 border border-transparent';
   const inactiveClasses = 'text-brand-muted hover:bg-brand-button-hover hover:text-white';
-  const activeClasses = 'bg-brand-button text-white';
+  const activeClasses = 'bg-brand-button text-white border-brand-button-hover';
 
   return (
     <NavLink to={to} className={({ isActive }) => `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`} end={to === "/"}>
@@ -69,12 +69,12 @@ const Sidebar: React.FC = () => {
                 {user && <NavItem to="/dashboard" label="Dashboard" icon={UserIcon} />}
             </nav>
             {user && (
-                <div className="mt-auto p-2 bg-brand-bg/80 rounded-lg">
+                <div className="mt-auto p-2 bg-brand-bg/80 rounded-lg border border-white/10">
                     <div className="flex items-center">
                         {user.avatar ? (
-                            <img src={user.avatar} alt="User avatar" className="w-10 h-10 rounded-full bg-brand-surface object-cover flex-shrink-0" />
+                            <img src={user.avatar} alt="User avatar" className="w-10 h-10 rounded-full bg-brand-surface object-cover flex-shrink-0 border-2 border-brand-surface" />
                         ) : (
-                            <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0 border-2 border-brand-surface">
                                 <UserIcon className="w-6 h-6 text-brand-muted" />
                             </div>
                         )}

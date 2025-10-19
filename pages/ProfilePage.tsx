@@ -57,9 +57,9 @@ const ProfilePage: React.FC = () => {
             {/* Profile Header */}
             <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl">
                 {avatar ? (
-                    <img src={avatar} alt="User Avatar" className="w-24 h-24 rounded-full object-cover bg-brand-surface flex-shrink-0" />
+                    <img src={avatar} alt="User Avatar" className="w-24 h-24 rounded-full object-cover bg-brand-surface flex-shrink-0 border-2 border-brand-surface" />
                 ) : (
-                    <div className="w-24 h-24 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0">
+                    <div className="w-24 h-24 rounded-full bg-brand-surface flex items-center justify-center flex-shrink-0 border-2 border-brand-surface">
                         <UserCircleIcon className="w-20 h-20 text-brand-muted" />
                     </div>
                 )}
