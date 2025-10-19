@@ -26,19 +26,19 @@ const SettingsTab: React.FC = () => {
     };
 
     return (
-        <div className="space-y-16 animate-fade-in max-w-lg mx-auto">
+        <div className="space-y-8 animate-fade-in max-w-lg mx-auto">
             {/* Profile Settings */}
-            <div className="relative mt-12">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-brand-surface rounded-full border-4 border-brand-surface shadow-lg flex items-center justify-center overflow-hidden">
-                    {avatar ? (
-                        <img src={avatar} alt="User Avatar" className="w-full h-full object-cover" />
-                    ) : (
-                        <UserCircleIcon className="w-20 h-20 text-brand-muted" />
-                    )}
-                </div>
-                <form onSubmit={handleProfileSave} className="p-6 pt-16 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl space-y-4 shadow-2xl">
-                    <h2 className="text-xl font-semibold text-center text-white">Profile Settings</h2>
-                    <div>
+            <form onSubmit={handleProfileSave} className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl space-y-4 shadow-lg">
+                <h2 className="text-xl font-semibold text-center text-white mb-4">Profile Settings</h2>
+                <div className="flex flex-col items-center space-y-4">
+                     <div className="w-24 h-24 bg-brand-surface rounded-full border-2 border-brand-surface shadow-md flex items-center justify-center overflow-hidden">
+                        {avatar ? (
+                            <img src={avatar} alt="User Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            <UserCircleIcon className="w-20 h-20 text-brand-muted" />
+                        )}
+                    </div>
+                    <div className="w-full">
                         <label htmlFor="username" className="block text-sm font-medium text-brand-muted">Username</label>
                         <input
                             type="text"
@@ -49,7 +49,7 @@ const SettingsTab: React.FC = () => {
                             placeholder="Your public display name"
                         />
                     </div>
-                    <div>
+                    <div className="w-full">
                         <label htmlFor="avatar" className="block text-sm font-medium text-brand-muted">Avatar URL</label>
                         <input
                             type="url"
@@ -60,41 +60,37 @@ const SettingsTab: React.FC = () => {
                             placeholder="https://example.com/image.png"
                         />
                     </div>
-                    <div className="pt-2 text-right">
-                        <Button type="submit" variant="primary">Save Profile</Button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div className="pt-2 text-right">
+                    <Button type="submit" variant="primary">Save Profile</Button>
+                </div>
+            </form>
             
             {/* Application Settings */}
-            <div className="space-y-12">
+            <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-center text-white">Application Settings</h2>
                 
-                <div className="relative">
-                    <div className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-2xl overflow-visible">
+                <div className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg flex justify-between items-center">
+                    <div>
                         <h3 className="font-medium text-white">Theme</h3>
                         <p className="text-sm text-brand-muted">Switch between light and dark mode.</p>
-                        <div className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-1/4">
-                            <button 
-                                onClick={toggleTheme}
-                                className={`w-14 h-7 rounded-full transition-colors flex items-center p-1 shadow-inner ${theme === 'dark' ? 'bg-brand-blue' : 'bg-gray-400'}`}
-                            >
-                                <span className={`block w-5 h-5 rounded-full bg-white transform transition-transform shadow-md ${theme === 'dark' ? 'translate-x-7' : 'translate-x-0'}`}></span>
-                            </button>
-                        </div>
                     </div>
+                    <button 
+                        onClick={toggleTheme}
+                        className={`w-14 h-7 rounded-full transition-colors flex items-center p-1 shadow-inner ${theme === 'dark' ? 'bg-brand-blue' : 'bg-gray-400'}`}
+                    >
+                        <span className={`block w-5 h-5 rounded-full bg-white transform transition-transform shadow-md ${theme === 'dark' ? 'translate-x-7' : 'translate-x-0'}`}></span>
+                    </button>
                 </div>
 
-                <div className="relative">
-                    <div className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-2xl overflow-visible">
+                <div className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg flex justify-between items-center">
+                     <div>
                         <h3 className="font-medium text-white">Wallet</h3>
-                        <p className="text-sm text-brand-muted">Disconnect your wallet from the application.</p>
+                        <p className="text-sm text-brand-muted">Disconnect your wallet from the app.</p>
                     </div>
-                    <div className="absolute bottom-0 right-6 translate-y-1/2">
-                         <Button variant="secondary" onClick={logout} className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 shadow-lg">
-                            Disconnect
-                        </Button>
-                    </div>
+                    <Button variant="secondary" onClick={logout} className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500">
+                        Disconnect
+                    </Button>
                 </div>
             </div>
         </div>

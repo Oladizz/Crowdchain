@@ -76,7 +76,7 @@ const ProfilePage: React.FC = () => {
                         <UserCircleIcon className="w-20 h-20 text-brand-muted" />
                     </div>
                 )}
-                <div className="text-center sm:text-left min-w-0">
+                <div className="text-center sm:text-left min-w-0 flex-1">
                     <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">{username}</h1>
                     <button 
                         onClick={handleCopyAddress} 
