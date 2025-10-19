@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo } from 'react';
 import { GoogleGenAI, Type } from '@google/genai';
-import { ProjectCategory } from '../types';
+import { ProjectCategory } from '../context/types';
 import Button from './Button';
 import Spinner from './Spinner';
 import { useAppContext } from '../context/AppContext';
@@ -191,7 +192,7 @@ const CreateProjectTab: React.FC = () => {
                             Describe your project idea, and our AI will help you build a comprehensive plan to submit for funding.
                         </p>
                     </div>
-                    <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                    <div className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 sm:p-6 rounded-xl space-y-4">
                         <label htmlFor="prompt" className="block text-sm font-medium text-brand-muted">Your Project Idea</label>
                         <textarea
                             id="prompt"
@@ -213,7 +214,7 @@ const CreateProjectTab: React.FC = () => {
 
             {mode === 'manual' && (
                  <div className="space-y-6">
-                    <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                    <div className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 sm:p-6 rounded-xl space-y-4">
                          <h3 className="text-lg font-semibold text-white">Project Details</h3>
                          <div>
                             <label htmlFor="name" className="block text-sm font-medium text-brand-muted mb-1">Project Name</label>
@@ -230,7 +231,7 @@ const CreateProjectTab: React.FC = () => {
                             </select>
                          </div>
                     </div>
-                    <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                    <div className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 sm:p-6 rounded-xl space-y-4">
                         <h3 className="text-lg font-semibold text-white">Funding Milestones</h3>
                         {manualData.milestones.map((milestone, index) => (
                             <div key={index} className="p-3 border border-brand-bg rounded-md space-y-3">
@@ -268,7 +269,7 @@ const CreateProjectTab: React.FC = () => {
             {generatedData && mode === 'ai' && (
                 <div className="space-y-6 animate-fade-in">
                     <h2 className="text-xl font-semibold text-center text-white">Review Your Generated Project</h2>
-                    <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                    <div className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 sm:p-6 rounded-xl space-y-4">
                         <h3 className="text-lg font-semibold text-white">Project Details</h3>
                         <div>
                             <p className="text-sm font-medium text-brand-muted">Project Name</p>
@@ -283,7 +284,7 @@ const CreateProjectTab: React.FC = () => {
                             <p className="mt-1 text-brand-muted break-words">{generatedData.description}</p>
                         </div>
                     </div>
-                     <div className="bg-brand-surface p-4 sm:p-6 rounded-lg space-y-4">
+                     <div className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 sm:p-6 rounded-xl space-y-4">
                         <h3 className="text-lg font-semibold text-white">Generated Milestones</h3>
                         <div className="space-y-3">
                             {generatedData.milestones.map((milestone, index) => (

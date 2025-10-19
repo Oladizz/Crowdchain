@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
@@ -14,7 +15,7 @@ const AboutPage: React.FC = () => {
         </p>
       </div>
 
-      <div className="p-6 bg-gray-100 dark:bg-brand-surface rounded-lg space-y-4 text-base text-brand-muted leading-relaxed">
+      <div className="p-6 bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl space-y-4 text-base text-brand-muted leading-relaxed">
         <p>
           CrowdChain was born from a simple yet powerful idea: crowdfunding should be more transparent, equitable, and community-driven. Traditional platforms often act as gatekeepers, imposing high fees and centralized control over projects. We believe in a different future—one where creators have direct access to funding and backers have a real stake in the projects they support.
         </p>
@@ -46,7 +47,7 @@ const AboutPage: React.FC = () => {
           </ul>
         </div>
         <div className="text-center">
-          <img src="https://picsum.photos/seed/about/500/500" alt="Community collaboration" className="rounded-lg shadow-xl" />
+          <img src="https://picsum.photos/seed/about/500/500" alt="Community collaboration" className="rounded-xl shadow-xl" />
         </div>
       </div>
       

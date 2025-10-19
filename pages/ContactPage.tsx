@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Button from '../components/Button';
 
@@ -21,12 +22,12 @@ const ContactPage: React.FC = () => {
       </div>
 
         {submitted ? (
-            <div className="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-center animate-fade-in">
+            <div className="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-xl text-center animate-fade-in">
                 <strong className="font-bold">Thank you!</strong>
                 <span className="block sm:inline"> Your message has been sent. We'll get back to you soon.</span>
             </div>
         ) : (
-            <form onSubmit={handleSubmit} className="p-6 bg-gray-100 dark:bg-brand-surface rounded-lg space-y-6 animate-fade-in">
+            <form onSubmit={handleSubmit} className="p-6 bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl space-y-6 animate-fade-in">
                 <div className="grid md:grid-cols-2 gap-6">
                      <div>
                         <label htmlFor="name" className="block text-sm font-medium text-brand-muted">Full Name</label>

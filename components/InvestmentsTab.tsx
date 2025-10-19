@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -20,7 +21,7 @@ const InvestmentsTab: React.FC = () => {
                 <div className="space-y-4">
                     {fundedProjectDetails.map(({ projectId, amount, project }) => (
                         project && (
-                             <Link to={`/project/${projectId}`} key={projectId} className="block bg-gray-100 dark:bg-brand-surface p-4 rounded-lg hover:shadow-lg transition-shadow">
+                             <Link to={`/project/${projectId}`} key={projectId} className="block bg-gray-100 dark:bg-brand-surface/60 dark:backdrop-blur-lg dark:border dark:border-white/10 p-4 rounded-xl hover:shadow-lg transition-shadow">
                                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                                     <div className="flex-grow">
                                         <p className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</p>
@@ -39,7 +40,7 @@ const InvestmentsTab: React.FC = () => {
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
+                <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface/60 dark:backdrop-blur-lg dark:border dark:border-white/10 rounded-xl">
                     <p className="text-brand-muted">You haven't funded any projects yet.</p>
                     <Link to="/explore" className="text-brand-blue-light hover:underline mt-2 inline-block">Explore projects to support</Link>
                 </div>

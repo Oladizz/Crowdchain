@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   const { user, login, truncateAddress } = useAppContext();
 
   return (
-    <header className="bg-white/80 dark:bg-brand-bg/80 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-200 dark:border-brand-surface/50">
+    <header className="bg-white/60 dark:bg-brand-surface/60 backdrop-blur-lg sticky top-0 z-30 border-b border-gray-200 dark:border-white/10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <NavLink to="/" className="flex items-center space-x-2 md:hidden">

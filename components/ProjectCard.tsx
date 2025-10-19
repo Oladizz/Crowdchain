@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Project } from '../types';
+import { Project } from '../context/types';
 import ProgressBar from './ProgressBar';
 
 interface ProjectCardProps {
@@ -12,7 +13,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const daysLeft = Math.ceil((new Date(project.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
   return (
-    <Link to={`/project/${project.id}`} className="flex flex-col bg-brand-surface rounded-lg overflow-hidden shadow-lg hover:shadow-brand-blue/30 transition-shadow duration-300 transform hover:-translate-y-1 h-full group">
+    <Link to={`/project/${project.id}`} className="flex flex-col bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl overflow-hidden shadow-lg hover:shadow-brand-blue/30 transition-shadow duration-300 transform hover:-translate-y-1 h-full group">
       {/* Image */}
       <div className="h-48 flex-shrink-0 overflow-hidden">
         <img className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src={project.image} alt={project.name} />

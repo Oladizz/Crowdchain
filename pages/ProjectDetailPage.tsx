@@ -1,9 +1,10 @@
 
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
 import Button from '../components/Button';
-import { Milestone } from '../types';
+import { Milestone } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 
@@ -72,14 +73,14 @@ const ProjectDetailPage: React.FC = () => {
         {/* Left Column (Image & Funding) */}
         <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl break-words">{project.name}</h1>
-          <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-lg shadow-2xl" />
+          <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-xl shadow-2xl" />
           
-          <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
+          <div className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Project Story</h2>
               <p className="text-sm sm:text-base text-brand-muted leading-relaxed break-words">{project.description}</p>
           </div>
 
-          <div className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
+          <div className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Updates</h2>
               {project.updates.length > 0 ? (
                 <div className="space-y-4">
@@ -98,7 +99,7 @@ const ProjectDetailPage: React.FC = () => {
 
         {/* Right Column (Stats & Milestones) */}
         <div className="mt-8 lg:mt-0 space-y-4 sm:space-y-6">
-          <div data-guide="project-funding" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5 sticky top-24">
+          <div data-guide="project-funding" className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5 sticky top-24">
             <ProgressBar value={project.amountRaised} max={project.fundingGoal} />
             <div className="mt-4">
               <p className="text-xl sm:text-2xl font-bold text-brand-blue-light break-words">${project.amountRaised.toLocaleString()}</p>
@@ -126,7 +127,7 @@ const ProjectDetailPage: React.FC = () => {
             </Button>
           </div>
 
-          <div data-guide="milestones" className="bg-gray-100 dark:bg-brand-surface rounded-lg p-4 sm:p-5">
+          <div data-guide="milestones" className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
             <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4">Milestones</h3>
             <ul className="space-y-4">
               {project.milestones.map(milestone => (
@@ -135,6 +136,11 @@ const ProjectDetailPage: React.FC = () => {
                     <div>
                         <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
                         <p className="text-xs sm:text-sm text-brand-muted break-words">{milestone.description}</p>
+                        {milestone.proof && (
+                            <a href={milestone.proof} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-blue-light hover:underline mt-1 inline-block">
+                                View Proof
+                            </a>
+                        )}
                     </div>
                 </li>
               ))}

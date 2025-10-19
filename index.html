@@ -25,7 +25,8 @@
             animation: {
               'text-focus-in': 'text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) both',
               'fade-in': 'fade-in 1.2s cubic-bezier(0.390, 0.575, 0.565, 1.000) both',
-              'slide-in-bottom': 'slide-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both'
+              'slide-in-bottom': 'slide-in-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both',
+              'gradient-xy': 'gradient-xy 15s ease infinite',
             },
             keyframes: {
               'text-focus-in': {
@@ -39,6 +40,10 @@
               'slide-in-bottom': {
                 '0%': { transform: 'translateY(50px)', opacity: '0' },
                 '100%': { transform: 'translateY(0)', opacity: '1' }
+              },
+              'gradient-xy': {
+                '0%, 100%': { 'background-position': '0% 50%' },
+                '50%': { 'background-position': '100% 50%' },
               }
             }
           }
@@ -57,11 +62,11 @@
   }
 }
 </script>
+<script src="//cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </head>
   <body class="bg-white dark:bg-brand-bg">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
-    <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
   </body>
 </html>

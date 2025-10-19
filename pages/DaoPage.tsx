@@ -1,7 +1,8 @@
 
+
 import React, { useState } from 'react';
 import ProposalCard from '../components/ProposalCard';
-import { Proposal } from '../types';
+import { Proposal } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
@@ -44,7 +45,7 @@ const DaoPage: React.FC = () => {
               <ProposalCard key={proposal.id} proposal={proposal} onVoteClick={() => handleVoteClick(proposal)} />
             ))
           ) : (
-             <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
+             <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl">
                 <p className="text-brand-muted">There are no active proposals at this time.</p>
              </div>
           )}

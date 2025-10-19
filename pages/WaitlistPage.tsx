@@ -1,4 +1,7 @@
+
+
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 
 const MailIcon: React.FC<{className?: string}> = ({className}) => (
@@ -45,10 +48,17 @@ const WaitlistPage: React.FC = () => {
                         : "Be the first to know about our upcoming native token launch, exclusive platform features, and early access opportunities. Sign up now!"
                     }
                 </p>
+                {submitted && (
+                    <div className="mt-8">
+                        <Link to="/explore">
+                            <Button variant="primary">Continue Exploring</Button>
+                        </Link>
+                    </div>
+                )}
             </div>
 
             {!submitted && (
-                <form onSubmit={handleSubmit} className="p-6 bg-gray-100 dark:bg-brand-surface rounded-lg space-y-4 max-w-lg mx-auto">
+                <form onSubmit={handleSubmit} className="p-6 bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl space-y-4 max-w-lg mx-auto">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <label htmlFor="email" className="sr-only">Email Address</label>
                         <input

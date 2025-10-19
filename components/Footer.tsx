@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -10,7 +11,7 @@ const SocialIcon: React.FC<{ href: string; children: React.ReactNode }> = ({ hre
 
 const Footer: React.FC = () => {
     return (
-        <footer className="bg-gray-100 dark:bg-brand-surface/50 border-t border-gray-200 dark:border-brand-surface">
+        <footer className="bg-gray-100/60 dark:bg-brand-surface/60 backdrop-blur-lg border-t border-gray-200 dark:border-white/10">
             <div className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                     <div className="text-sm text-brand-muted">

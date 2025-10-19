@@ -1,3 +1,4 @@
+
 import React, { useState, useLayoutEffect } from 'react';
 import { GuideStep } from '../guideConfig';
 
@@ -63,7 +64,7 @@ const UserGuide: React.FC<UserGuideProps> = ({ steps, guideKey, onClose }) => {
     width: `${targetRect.width + 10}px`,
     height: `${targetRect.height + 10}px`,
     boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.7)',
-    borderRadius: '8px',
+    borderRadius: '12px',
     transition: 'all 0.3s ease-in-out',
     pointerEvents: 'none',
   };
@@ -92,7 +93,7 @@ const UserGuide: React.FC<UserGuideProps> = ({ steps, guideKey, onClose }) => {
   return (
     <div className="fixed inset-0 z-[100] pointer-events-none" aria-live="polite" aria-modal="true" role="dialog">
       <div style={highlightStyle}></div>
-      <div style={infoBoxStyle} className="bg-brand-surface p-4 rounded-lg shadow-2xl text-white animate-fade-in w-full sm:w-auto pointer-events-auto">
+      <div style={infoBoxStyle} className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 rounded-xl shadow-2xl text-white animate-fade-in w-full sm:w-auto pointer-events-auto">
         <h3 className="font-bold text-lg mb-2 text-brand-blue-light">{step.title}</h3>
         <p className="text-sm">{step.content}</p>
         <div className="flex justify-between items-center mt-4">

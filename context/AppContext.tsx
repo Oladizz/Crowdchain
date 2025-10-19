@@ -1,8 +1,5 @@
-
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { doc, setDoc, collection, addDoc, getDocs, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from './firebase';
-import { Project, Proposal, User, ProjectCategory } from '../types';
+import { Project, Proposal, User, ProjectCategory, Milestone } from './types';
 
 interface GeneratedProjectData {
     name: string;
@@ -34,7 +31,7 @@ interface AppContextType {
   toggleTheme: () => void;
   fundProject: (projectId: string, amount: number) => void;
   voteOnProposal: (proposalId: string, voteType: 'for' | 'against') => void;
-  updateMilestoneStatus: (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => void;
+  updateMilestoneStatus: (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete', proof?: string) => void;
   createProject: (projectData: GeneratedProjectData) => void;
   updateUserProfile: (profileData: { username?: string; avatar?: string }) => void;
   truncateAddress: (address: string) => string;
@@ -60,35 +57,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   }, [theme]);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const projectsCollection = collection(db, 'projects');
-        const projectSnapshot = await getDocs(projectsCollection);
-        const projectList = projectSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
-        setProjects(projectList);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        addToast('Error: Could not fetch projects from database.', 'error');
-      }
-    };
-
-    const fetchProposals = async () => {
-      try {
-        const proposalsCollection = collection(db, 'proposals');
-        const proposalSnapshot = await getDocs(proposalsCollection);
-        const proposalList = proposalSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Proposal));
-        setProposals(proposalList);
-      } catch (error) {
-        console.error("Error fetching proposals:", error);
-        addToast('Error: Could not fetch proposals from database.', 'error');
-      }
-    };
-
-    fetchProjects();
-    fetchProposals();
-  }, []);
-
   const addToast = (message: string, type: Toast['type']) => {
       const id = Date.now();
       setToasts(prevToasts => [...prevToasts, { id, message, type }]);
@@ -100,24 +68,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const truncateAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
-  const connectWallet = async (isAutoConnect = false) => {
-    console.log('Attempting to connect wallet. Auto-connect:', isAutoConnect);
+  const connectWallet = async () => {
     if (!(window as any).ethereum) {
-      console.error('No web3 wallet detected.');
-      if (!isAutoConnect) addToast('Please install a web3 wallet!', 'error');
+      addToast('Please install a web3 wallet!', 'error');
       return;
     }
 
     try {
-      console.log('Requesting accounts...');
-      const accounts = await (window as any).ethereum.request({
-        method: isAutoConnect ? 'eth_accounts' : 'eth_requestAccounts'
-      });
-      console.log('Accounts received:', accounts);
-
+      const accounts = await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
       if (!accounts || accounts.length === 0) {
-        console.warn('No accounts found.');
-        if (!isAutoConnect) addToast('No accounts found.', 'error');
+        addToast('No accounts found.', 'error');
         return;
       }
       const chainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
@@ -129,55 +89,25 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           });
         } catch (switchError: any) {
           if (switchError.code === 4902) {
-            try {
-              await (window as any).ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                  {
-                    chainId: BASE_SEPOLIA_CHAIN_ID,
-                    chainName: 'Base Sepolia',
-                    nativeCurrency: {
-                      name: 'Ethereum',
-                      symbol: 'ETH',
-                      decimals: 18,
-                    },
-                    rpcUrls: ['https://sepolia.base.org'],
-                    blockExplorerUrls: ['https://sepolia-explorer.base.org'],
-                  },
-                ],
-              });
-            } catch (addError) {
-              addToast('Failed to add Base Sepolia network.', 'error');
-              return;
-            }
+            addToast('Please add Base Sepolia to your wallet.', 'error');
           } else {
             addToast('Failed to switch to Base Sepolia.', 'error');
-            return;
           }
+          return;
         }
       }
 
       const walletAddress = accounts[0];
+      const savedProfileJSON = localStorage.getItem(`user_profile_${walletAddress}`);
+      const savedProfile = savedProfileJSON ? JSON.parse(savedProfileJSON) : {};
       
-      const userRef = doc(db, 'users', walletAddress);
-      const userSnap = await getDoc(userRef);
-
-      if (userSnap.exists()) {
-        console.log('User found in Firestore:', userSnap.data());
-        setUser(userSnap.data() as User);
-      } else {
-        console.log('User not found in Firestore, creating new user...');
-        const newUser: User = {
-          walletAddress,
-          createdProjectIds: [],
-          fundedProjects: [],
-        };
-        await setDoc(userRef, newUser);
-        console.log('New user created:', newUser);
-        setUser(newUser);
-      }
+      setUser({
+        walletAddress,
+        createdProjectIds: [], // In real app, this would be fetched
+        fundedProjects: [], // In real app, this would be fetched
+        ...savedProfile,
+      });
       localStorage.setItem('walletAddress', walletAddress);
-      console.log('Wallet address saved to localStorage.');
       addToast('Wallet connected!', 'success');
 
     } catch (error) {
@@ -195,10 +125,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     const autoConnect = async () => {
         if ((window as any).ethereum && localStorage.getItem('walletAddress')) {
-            await connectWallet(true);
+            await connectWallet();
         }
     };
     autoConnect();
+
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
         logout();
@@ -225,148 +156,70 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
   };
 
-  const fundProject = async (projectId: string, amount: number) => {
-    if (!user) {
-      addToast("Connect your wallet to fund a project.", 'error');
-      return;
+  const fundProject = (projectId: string, amount: number) => {
+    setProjects(prevProjects =>
+      prevProjects.map(p =>
+        p.id === projectId ? { ...p, amountRaised: p.amountRaised + amount } : p
+      )
+    );
+    if (user) {
+        const existingFunding = user.fundedProjects.find(fp => fp.projectId === projectId);
+        if (existingFunding) {
+            const updatedFundedProjects = user.fundedProjects.map(fp => fp.projectId === projectId ? {...fp, amount: fp.amount + amount} : fp);
+            setUser({...user, fundedProjects: updatedFundedProjects});
+        } else {
+            setUser({...user, fundedProjects: [...user.fundedProjects, {projectId, amount}]});
+        }
     }
-    addToast('Saving to database...', 'info');
-    try {
-      const projectRef = doc(db, "projects", projectId);
-      const project = projects.find(p => p.id === projectId);
-      if (project) {
-        const newAmount = project.amountRaised + amount;
-        await updateDoc(projectRef, { amountRaised: newAmount });
-
-        const userRef = doc(db, 'users', user.walletAddress);
-        const updatedFundedProjects = [...user.fundedProjects, { projectId, amount }];
-        await updateDoc(userRef, { fundedProjects: updatedFundedProjects });
-
-        setUser({ ...user, fundedProjects: updatedFundedProjects });
-        setProjects(prevProjects =>
-          prevProjects.map(p =>
-            p.id === projectId ? { ...p, amountRaised: newAmount } : p
-          )
-        );
-        addToast('Saved!', 'success');
-      }
-    } catch (error) {
-      console.error("Error funding project:", error);
-      addToast('Error: Could not save to database.', 'error');
-    }
+    addToast(`Successfully funded with $${amount}!`, 'success');
   };
 
-  const voteOnProposal = async (proposalId: string, voteType: 'for' | 'against') => {
-    if (!user) {
-      addToast("Connect your wallet to vote.", 'error');
-      return;
-    }
-    addToast('Saving to database...', 'info');
-    try {
-      const proposalRef = doc(db, "proposals", proposalId);
-      const proposal = proposals.find(p => p.id === proposalId);
-      if (proposal) {
-        const newVotesFor = voteType === 'for' ? proposal.votesFor + 1 : proposal.votesFor;
-        const newVotesAgainst = voteType === 'against' ? proposal.votesAgainst + 1 : proposal.votesAgainst;
-
-        await updateDoc(proposalRef, {
-          votesFor: newVotesFor,
-          votesAgainst: newVotesAgainst
-        });
-
-        setProposals(prevProposals =>
-          prevProposals.map(p => {
-            if (p.id === proposalId) {
-              return { ...p, votesFor: newVotesFor, votesAgainst: newVotesAgainst };
-            }
-            return p;
-          })
-        );
-        addToast('Saved!', 'success');
-      }
-    } catch (error) {
-      console.error("Error voting on proposal:", error);
-      addToast('Error: Could not save to database.', 'error');
-    }
+  const voteOnProposal = (proposalId: string, voteType: 'for' | 'against') => {
+    setProposals(prevProposals =>
+      prevProposals.map(p => {
+        if (p.id === proposalId) {
+          return voteType === 'for'
+            ? { ...p, votesFor: p.votesFor + 1 } 
+            : { ...p, votesAgainst: p.votesAgainst + 1 };
+        }
+        return p;
+      })
+    );
+    addToast('Your vote has been cast!', 'success');
   };
   
-  const updateMilestoneStatus = async (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete') => {
-    if (!user) {
-      addToast("Connect your wallet to update milestone status.", 'error');
-      return;
-    }
-    addToast('Saving to database...', 'info');
-    try {
-      const projectRef = doc(db, "projects", projectId);
-      const project = projects.find(p => p.id === projectId);
-      if (project) {
-        const updatedMilestones = project.milestones.map(m =>
-          m.id === milestoneId ? { ...m, status } : m
-        );
-        await updateDoc(projectRef, { milestones: updatedMilestones });
-
-        setProjects(prevProjects => prevProjects.map(p => {
-            if (p.id === projectId) {
-                return {
-                    ...p,
-                    milestones: updatedMilestones
-                }
+  const updateMilestoneStatus = (projectId: string, milestoneId: number, status: 'Pending' | 'In Review' | 'Complete', proof?: string) => {
+    setProjects(prevProjects => prevProjects.map(p => {
+        if (p.id === projectId) {
+            return {
+                ...p,
+                milestones: p.milestones.map(m => {
+                    if (m.id === milestoneId) {
+                        const updatedMilestone: Milestone = { ...m, status };
+                        if (proof) {
+                           updatedMilestone.proof = proof;
+                        }
+                        return updatedMilestone;
+                    }
+                    return m;
+                })
             }
-            return p;
-        }));
-        addToast('Saved!', 'success');
-      }
-    } catch (error) {
-      console.error("Error updating milestone status:", error);
-      addToast('Error: Could not save to database.', 'error');
+        }
+        return p;
+    }));
+    if (status === 'In Review') {
+        addToast('Milestone submitted for DAO review.', 'info');
     }
   };
 
-  const createProject = async (projectData: GeneratedProjectData) => {
+  const createProject = (projectData: GeneratedProjectData) => {
     if (!user) {
-      addToast("Connect your wallet to create a project.", 'error');
-      return;
+        addToast("Connect your wallet to create a project.", 'error');
+        return;
     }
-    addToast('Saving to database...', 'info');
-    try {
-      const fundingGoal = projectData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0);
-
-      const projectDocRef = await addDoc(collection(db, "projects"), {
-        name: projectData.name,
-        creator: user.username || user.walletAddress,
-        creatorWallet: user.walletAddress,
-        image: `https://picsum.photos/seed/${Date.now()}/800/600`,
-        description: projectData.description,
-        category: projectData.category,
-        fundingGoal: fundingGoal,
-        amountRaised: 0,
-        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        milestones: projectData.milestones.map((m, index) => ({
-          id: index + 1,
-          title: m.title,
-          description: m.description,
-          fundsRequired: m.fundsRequired,
-          status: 'Pending',
-        })),
-        daoStatus: 'Pending',
-        updates: [],
-      });
-
-      const newProjectId = projectDocRef.id;
-
-      const proposalDocRef = await addDoc(collection(db, "proposals"), {
-        projectId: newProjectId,
-        projectName: projectData.name,
-        type: 'New Project',
-        description: `Proposal to approve the new project: "${projectData.name}".`,
-        votesFor: 0,
-        votesAgainst: 0,
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      });
-
-      // This part will be updated when we fetch data from Firestore
-      // For now, we'll optimistically update the UI
-      const newProject: Project = {
+    const newProjectId = (projects.length + 1 + Date.now()).toString();
+    const fundingGoal = projectData.milestones.reduce((sum, m) => sum + m.fundsRequired, 0);
+    const newProject: Project = {
         id: newProjectId,
         name: projectData.name,
         creator: user.username || user.walletAddress,
@@ -386,9 +239,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         })),
         daoStatus: 'Pending',
         updates: [],
-      };
-      const newProposal: Proposal = {
-        id: proposalDocRef.id,
+    };
+    const newProposal: Proposal = {
+        id: `p${proposals.length + 1 + Date.now()}`,
         projectId: newProjectId,
         projectName: newProject.name,
         type: 'New Project',
@@ -396,41 +249,29 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         votesFor: 0,
         votesAgainst: 0,
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      };
-      setProjects(prevProjects => [...prevProjects, newProject]);
-      setProposals(prevProposals => [newProposal, ...prevProposals]);
-
-      const userRef = doc(db, 'users', user.walletAddress);
-      const updatedCreatedProjectIds = [...user.createdProjectIds, newProjectId];
-      await updateDoc(userRef, { createdProjectIds: updatedCreatedProjectIds });
-      setUser({ ...user, createdProjectIds: updatedCreatedProjectIds });
-
-      addToast('Saved!', 'success');
-    } catch (error) {
-      console.error("Error creating project:", error);
-      addToast('Error: Could not save to database.', 'error');
-    }
+    };
+    setProjects(prevProjects => [...prevProjects, newProject]);
+    setProposals(prevProposals => [newProposal, ...prevProposals]);
+    setUser(prevUser => {
+        if (!prevUser) return null;
+        return { ...prevUser, createdProjectIds: [...prevUser.createdProjectIds, newProjectId] };
+    });
+    addToast('Project submitted to DAO for review!', 'success');
   };
 
-  const updateUserProfile = async (profileData: { username?: string; avatar?: string }) => {
-    if (!user) {
-      addToast("Connect your wallet to update your profile.", 'error');
-      return;
-    }
-    addToast('Saving to database...', 'info');
-    try {
-      const userRef = doc(db, "users", user.walletAddress);
-      await updateDoc(userRef, profileData);
-
-      setUser(prevUser => {
-          if (!prevUser) return null;
-          return { ...prevUser, ...profileData };
-      });
-      addToast('Saved!', 'success');
-    } catch (error) {
-      console.error("Error updating user profile:", error);
-      addToast('Error: Could not save to database.', 'error');
-    }
+  const updateUserProfile = (profileData: { username?: string; avatar?: string }) => {
+    if (!user) return;
+    setUser(prevUser => {
+        if (!prevUser) return null;
+        const updatedUser = { ...prevUser, ...profileData };
+        const profileToSave = {
+            username: updatedUser.username,
+            avatar: updatedUser.avatar,
+        };
+        localStorage.setItem(`user_profile_${updatedUser.walletAddress}`, JSON.stringify(profileToSave));
+        return updatedUser;
+    });
+    addToast('Profile updated successfully!', 'success');
   };
 
   return (

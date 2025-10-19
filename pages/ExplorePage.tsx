@@ -1,17 +1,30 @@
 
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
-import { ProjectCategory } from '../types';
+import { ProjectCategory } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Button from '../components/Button';
 import StatCard from '../components/StatCard';
 
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
 const ExplorePage: React.FC = () => {
+  const query = useQuery();
   const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState('All');
+  const [category, setCategory] = useState(query.get('category') || 'All');
   
   const { projects } = useAppContext();
+  
+  useEffect(() => {
+    const queryCategory = query.get('category');
+    if (queryCategory && Object.values(ProjectCategory).includes(queryCategory as ProjectCategory)) {
+        setCategory(queryCategory);
+    }
+  }, [query]);
   
   const approvedProjects = useMemo(() => projects.filter(p => p.daoStatus === 'Approved'), [projects]);
 
@@ -83,7 +96,7 @@ const ExplorePage: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
+          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface/60 dark:backdrop-blur-lg dark:border dark:border-white/10 rounded-xl">
             <p className="text-brand-muted">No spotlight projects available right now.</p>
           </div>
         )}
@@ -98,11 +111,11 @@ const ExplorePage: React.FC = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="sticky top-16 bg-white/90 dark:bg-brand-bg/90 backdrop-blur-md z-20 py-4 rounded-lg">
+        <div className="sticky top-16 bg-white/60 dark:bg-brand-surface/60 backdrop-blur-lg z-20 p-4 rounded-xl border border-gray-200 dark:border-white/10">
             <div className="flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-grow w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 text-brand-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 </div>
