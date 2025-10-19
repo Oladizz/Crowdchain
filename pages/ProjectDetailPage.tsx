@@ -1,5 +1,4 @@
 
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
@@ -23,6 +22,12 @@ const ClockIcon: React.FC = () => (
 const LockClosedIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-brand-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    </svg>
+);
+
+const UserCircleIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-12 w-12 text-brand-muted"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
 );
 
@@ -72,7 +77,12 @@ const ProjectDetailPage: React.FC = () => {
       <div className="lg:grid lg:grid-cols-3 lg:gap-12">
         {/* Left Column (Image & Funding) */}
         <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl break-words">{project.name}</h1>
+          <div>
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-900 text-blue-300 mb-2">
+                {project.category}
+            </span>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight sm:text-3xl lg:text-4xl break-words">{project.name}</h1>
+          </div>
           <img src={project.image} alt={project.name} className="w-full h-auto object-cover rounded-xl shadow-2xl" />
           
           <div className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
@@ -125,6 +135,21 @@ const ProjectDetailPage: React.FC = () => {
             >
               {daysLeft > 0 ? 'Fund this Project' : 'Funding Ended'}
             </Button>
+          </div>
+
+          <div className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4">About the Creator</h3>
+            <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                    <UserCircleIcon />
+                </div>
+                <div className="flex-grow min-w-0">
+                    <p className="font-semibold text-gray-900 dark:text-white break-words truncate">{project.creator}</p>
+                    <Link to="#" className="text-xs text-brand-blue-light hover:underline mt-1 inline-block opacity-70" aria-disabled="true" onClick={(e) => e.preventDefault()}>
+                        View Profile (coming soon)
+                    </Link>
+                </div>
+            </div>
           </div>
 
           <div data-guide="milestones" className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">

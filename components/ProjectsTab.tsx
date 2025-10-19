@@ -26,6 +26,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMilestone, setSelectedMilestone] = useState<{ projectId: string, milestone: Milestone } | null>(null);
     const [proof, setProof] = useState('');
+    const [file, setFile] = useState<File | null>(null);
 
     if (!user) return null;
 
@@ -34,6 +35,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
     const handleOpenModal = (projectId: string, milestone: Milestone) => {
         setSelectedMilestone({ projectId, milestone });
         setProof(milestone.proof || '');
+        setFile(null);
         setIsModalOpen(true);
     };
 
@@ -41,12 +43,22 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
         setIsModalOpen(false);
         setSelectedMilestone(null);
         setProof('');
+        setFile(null);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setFile(e.target.files[0]);
+            setProof(''); // Clear URL if file is selected
+        }
     };
 
     const handleSubmitProof = (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedMilestone && proof) {
-            updateMilestoneStatus(selectedMilestone.projectId, selectedMilestone.milestone.id, 'In Review', proof);
+        if (selectedMilestone && (proof || file)) {
+            // Simulate upload by creating a placeholder URL
+            const proofLink = file ? `file_upload://${file.name}` : proof;
+            updateMilestoneStatus(selectedMilestone.projectId, selectedMilestone.milestone.id, 'In Review', proofLink);
             handleCloseModal();
         }
     };
@@ -107,21 +119,50 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
             <form onSubmit={handleSubmitProof} className="space-y-4">
                 <div>
                     <label htmlFor="proof" className="block text-sm font-medium text-brand-muted">Proof of Completion (URL)</label>
-                    <p className="text-xs text-brand-muted mb-2">Provide a link to a document, video, or image demonstrating the milestone is complete.</p>
+                    <p className="text-xs text-brand-muted mb-2">Provide a link to a document, video, or image.</p>
                     <input
                         type="url"
                         id="proof"
                         value={proof}
-                        onChange={(e) => setProof(e.target.value)}
+                        onChange={(e) => {
+                            setProof(e.target.value);
+                            if (e.target.value) setFile(null);
+                        }}
                         className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-gray-900 dark:text-white"
                         placeholder="https://example.com/proof.pdf"
-                        required
-                        autoFocus
                     />
                 </div>
-                <div className="flex justify-end space-x-3">
+
+                <div className="flex items-center text-xs text-brand-muted">
+                    <div className="flex-grow border-t border-brand-surface"></div>
+                    <span className="flex-shrink mx-4">OR</span>
+                    <div className="flex-grow border-t border-brand-surface"></div>
+                </div>
+
+                <div>
+                    <label htmlFor="file-upload" className="block text-sm font-medium text-brand-muted">Upload a file</label>
+                    <div className="mt-2 flex items-center justify-center w-full">
+                        <label htmlFor="file-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-brand-surface border-dashed rounded-lg cursor-pointer bg-brand-bg hover:bg-brand-button-hover transition-colors">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                                <svg className="w-8 h-8 mb-4 text-brand-muted" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                </svg>
+                                <p className="mb-2 text-sm text-brand-muted"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p className="text-xs text-brand-muted">Image or document files</p>
+                            </div>
+                            <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} accept="image/*,application/pdf,.doc,.docx,.md" />
+                        </label>
+                    </div> 
+                    {file && (
+                        <div className="mt-2 text-sm text-green-400 bg-green-900/50 p-2 rounded-md text-center">
+                            Selected file: <span className="font-medium">{file.name}</span>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-2">
                     <Button type="button" variant="secondary" onClick={handleCloseModal}>Cancel</Button>
-                    <Button type="submit" variant="primary">Submit for Review</Button>
+                    <Button type="submit" variant="primary" disabled={!proof && !file}>Submit for Review</Button>
                 </div>
             </form>
         </Modal>
