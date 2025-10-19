@@ -42,7 +42,7 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon }) => {
-  const baseClasses = 'flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200';
+  const baseClasses = 'flex items-center px-4 py-3 text-sm font-medium rounded-full transition-colors duration-200';
   const inactiveClasses = 'text-brand-muted hover:bg-brand-button-hover hover:text-white';
   const activeClasses = 'bg-brand-button text-white';
 

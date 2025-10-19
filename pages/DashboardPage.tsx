@@ -48,7 +48,7 @@ const DashboardPage: React.FC = () => {
     const TabButton: React.FC<{tabName: Tab, label: string}> = ({ tabName, label }) => (
         <button
             onClick={() => setActiveTab(tabName)}
-            className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${activeTab === tabName ? 'bg-brand-button text-white' : 'text-brand-muted hover:bg-brand-surface hover:text-white'}`}
+            className={`px-3 sm:px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap ${activeTab === tabName ? 'bg-brand-button text-white' : 'text-brand-muted hover:bg-brand-surface hover:text-white'}`}
         >
             {label}
         </button>
