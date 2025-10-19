@@ -1,5 +1,3 @@
-
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
@@ -17,7 +15,7 @@ const ExplorePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState(query.get('category') || 'All');
   
-  const { projects } = useAppContext();
+  const { projects, getUserProfileByWallet } = useAppContext();
   
   useEffect(() => {
     const queryCategory = query.get('category');
@@ -91,9 +89,17 @@ const ExplorePage: React.FC = () => {
         </div>
         {spotlightProjects.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {spotlightProjects.map(project => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
+            {spotlightProjects.map(project => {
+                const creatorProfile = getUserProfileByWallet(project.creatorWallet);
+                return (
+                  <ProjectCard 
+                      key={project.id} 
+                      project={project} 
+                      creatorUsername={creatorProfile?.username}
+                      creatorAvatar={creatorProfile?.avatar}
+                  />
+                );
+            })}
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface/60 dark:backdrop-blur-lg dark:border dark:border-white/10 rounded-xl">
@@ -145,9 +151,17 @@ const ExplorePage: React.FC = () => {
         {/* Projects Grid */}
         {filteredProjects.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {filteredProjects.map(project => (
-                <ProjectCard key={project.id} project={project} />
-            ))}
+            {filteredProjects.map(project => {
+                const creatorProfile = getUserProfileByWallet(project.creatorWallet);
+                return (
+                  <ProjectCard 
+                      key={project.id} 
+                      project={project} 
+                      creatorUsername={creatorProfile?.username}
+                      creatorAvatar={creatorProfile?.avatar}
+                  />
+                );
+            })}
             </div>
         ) : (
             <div className="text-center py-12 sm:py-16">

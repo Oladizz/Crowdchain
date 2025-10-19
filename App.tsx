@@ -20,6 +20,7 @@ import Sidebar from './components/Sidebar';
 import ToastContainer from './components/ToastContainer';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
+import ProfilePage from './pages/ProfilePage';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const location = useLocation();
@@ -89,6 +90,7 @@ const AppContent: React.FC = () => {
             <Route path="/home" element={<MainLayout><HomePage /></MainLayout>} />
             <Route path="/explore" element={<MainLayout><ExplorePage /></MainLayout>} />
             <Route path="/project/:id" element={<MainLayout><ProjectDetailPage /></MainLayout>} />
+            <Route path="/profile/:walletAddress" element={<MainLayout><ProfilePage /></MainLayout>} />
             <Route path="/dao" element={<MainLayout><DaoPage /></MainLayout>} />
             <Route path="/dashboard" element={<MainLayout><DashboardPage /></MainLayout>} />
             <Route path="/create" element={<MainLayout><CreateProjectPage /></MainLayout>} />

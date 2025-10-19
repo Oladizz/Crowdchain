@@ -1,5 +1,3 @@
-
-
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
@@ -60,7 +58,7 @@ const categoryIcons: Record<ProjectCategory, React.ReactNode> = {
 };
 
 const HomePage: React.FC = () => {
-  const { projects, user } = useAppContext();
+  const { projects, user, getUserProfileByWallet } = useAppContext();
   
   const approvedProjects = useMemo(() => projects.filter(p => p.daoStatus === 'Approved'), [projects]);
 
@@ -177,11 +175,18 @@ const HomePage: React.FC = () => {
         </div>
         {spotlightProjects.length > 0 ? (
           <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
-            {spotlightProjects.map(project => (
-              <div key={project.id} className="flex-shrink-0 w-64">
-                <ProjectCard project={project} />
-              </div>
-            ))}
+            {spotlightProjects.map(project => {
+                const creatorProfile = getUserProfileByWallet(project.creatorWallet);
+                return (
+                  <div key={project.id} className="flex-shrink-0 w-64">
+                    <ProjectCard
+                        project={project}
+                        creatorUsername={creatorProfile?.username}
+                        creatorAvatar={creatorProfile?.avatar}
+                    />
+                  </div>
+                );
+            })}
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
@@ -216,11 +221,18 @@ const HomePage: React.FC = () => {
                   <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Recommended For You</h2>
               </div>
               <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
-                  {recommendedProjects.map(project => (
-                      <div key={project.id} className="flex-shrink-0 w-64">
-                          <ProjectCard project={project} />
-                      </div>
-                  ))}
+                  {recommendedProjects.map(project => {
+                      const creatorProfile = getUserProfileByWallet(project.creatorWallet);
+                      return (
+                          <div key={project.id} className="flex-shrink-0 w-64">
+                              <ProjectCard
+                                  project={project}
+                                  creatorUsername={creatorProfile?.username}
+                                  creatorAvatar={creatorProfile?.avatar}
+                              />
+                          </div>
+                      );
+                  })}
               </div>
           </section>
       )}
@@ -244,11 +256,18 @@ const HomePage: React.FC = () => {
         </div>
         {newestProjects.length > 0 ? (
           <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
-            {newestProjects.map(project => (
-              <div key={project.id} className="flex-shrink-0 w-64">
-                <ProjectCard project={project} />
-              </div>
-            ))}
+            {newestProjects.map(project => {
+                const creatorProfile = getUserProfileByWallet(project.creatorWallet);
+                return (
+                  <div key={project.id} className="flex-shrink-0 w-64">
+                    <ProjectCard
+                        project={project}
+                        creatorUsername={creatorProfile?.username}
+                        creatorAvatar={creatorProfile?.avatar}
+                    />
+                  </div>
+                );
+            })}
           </div>
         ) : (
           <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">

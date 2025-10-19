@@ -145,8 +145,8 @@ const ProjectDetailPage: React.FC = () => {
                 </div>
                 <div className="flex-grow min-w-0">
                     <p className="font-semibold text-gray-900 dark:text-white break-words truncate">{project.creator}</p>
-                    <Link to="#" className="text-xs text-brand-blue-light hover:underline mt-1 inline-block opacity-70" aria-disabled="true" onClick={(e) => e.preventDefault()}>
-                        View Profile (coming soon)
+                    <Link to={`/profile/${project.creatorWallet}`} className="text-xs text-brand-blue-light hover:underline mt-1 inline-block">
+                        View Profile
                     </Link>
                 </div>
             </div>

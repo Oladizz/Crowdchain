@@ -35,6 +35,7 @@ interface AppContextType {
   createProject: (projectData: GeneratedProjectData) => void;
   updateUserProfile: (profileData: { username?: string; avatar?: string }) => void;
   truncateAddress: (address: string) => string;
+  getUserProfileByWallet: (walletAddress: string) => { username?: string; avatar?: string } | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -98,7 +99,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
 
       const walletAddress = accounts[0];
-      const savedProfileJSON = localStorage.getItem(`user_profile_${walletAddress}`);
+      const savedProfileJSON = localStorage.getItem(`user_profile_${walletAddress.toLowerCase()}`);
       const savedProfile = savedProfileJSON ? JSON.parse(savedProfileJSON) : {};
       
       setUser({
@@ -268,14 +269,22 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             username: updatedUser.username,
             avatar: updatedUser.avatar,
         };
-        localStorage.setItem(`user_profile_${updatedUser.walletAddress}`, JSON.stringify(profileToSave));
+        localStorage.setItem(`user_profile_${updatedUser.walletAddress.toLowerCase()}`, JSON.stringify(profileToSave));
         return updatedUser;
     });
     addToast('Profile updated successfully!', 'success');
   };
+  
+  const getUserProfileByWallet = (walletAddress: string): { username?: string; avatar?: string } | null => {
+    if (!walletAddress) return null;
+    const savedProfileJSON = localStorage.getItem(`user_profile_${walletAddress.toLowerCase()}`);
+    if (!savedProfileJSON) return null;
+    return JSON.parse(savedProfileJSON);
+  };
+
 
   return (
-    <AppContext.Provider value={{ projects, proposals, user, theme, toasts, addToast, removeToast, login: connectWallet, logout, toggleTheme, fundProject, voteOnProposal, updateMilestoneStatus, createProject, updateUserProfile, truncateAddress }}>
+    <AppContext.Provider value={{ projects, proposals, user, theme, toasts, addToast, removeToast, login: connectWallet, logout, toggleTheme, fundProject, voteOnProposal, updateMilestoneStatus, createProject, updateUserProfile, truncateAddress, getUserProfileByWallet }}>
       {children}
     </AppContext.Provider>
   );
