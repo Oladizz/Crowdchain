@@ -7,23 +7,15 @@ import { getFirestore } from "firebase/firestore";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_API_KEY,
-  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_APP_ID,
-  measurementId: import.meta.env.VITE_MEASUREMENT_ID
+  apiKey: "AIzaSyBFhCm5wtVIAiwFYrd7RqEKP60rHQnQKEc",
+  authDomain: "crowdchain-cbddc.firebaseapp.com",
+  projectId: "crowdchain-cbddc",
+  storageBucket: "crowdchain-cbddc.appspot.com",
+  messagingSenderId: "992248848325",
+  appId: "1:992248848325:web:9bc966f480bed1a33175ac",
+  measurementId: "G-E59WSE5F46"
 };
 
 // Initialize Firebase
-let app;
-if (firebaseConfig.projectId) {
-  app = initializeApp(firebaseConfig);
-} else {
-  console.error("Firebase project ID is missing. Please check your .env file.");
-  // You might want to throw an error here or handle it in a way that
-  // doesn't break the entire app, e.g., by using a mock database.
-}
-
-export const db = app ? getFirestore(app) : null;
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
