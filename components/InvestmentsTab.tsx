@@ -1,23 +1,13 @@
 
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import ProgressBar from './ProgressBar';
-import Spinner from './Spinner';
 
 const InvestmentsTab: React.FC = () => {
-    const { user, projects, isLoading } = useAppContext();
+    const { user, projects } = useAppContext();
 
     if (!user) return null;
-
-    if (isLoading) {
-        return (
-            <div className="flex justify-center items-center py-10">
-                <Spinner className="h-8 w-8" />
-            </div>
-        );
-    }
 
     const fundedProjectDetails = user.fundedProjects.map(funding => {
         const project = projects.find(p => p.id === funding.projectId);

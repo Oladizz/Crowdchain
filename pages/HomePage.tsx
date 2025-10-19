@@ -5,7 +5,6 @@ import StatCard from '../components/StatCard';
 import ProjectCard from '../components/ProjectCard';
 import { useAppContext } from '../context/AppContext';
 import { ProjectCategory } from '../context/types';
-import Spinner from '../components/Spinner';
 
 // --- SVG Icons ---
 const ChevronRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -59,7 +58,7 @@ const categoryIcons: Record<ProjectCategory, React.ReactNode> = {
 };
 
 const HomePage: React.FC = () => {
-  const { projects, user, getUserProfileByWallet, isLoading } = useAppContext();
+  const { projects, user, getUserProfileByWallet } = useAppContext();
   
   const approvedProjects = useMemo(() => projects.filter(p => p.daoStatus === 'Approved'), [projects]);
 
@@ -92,14 +91,6 @@ const HomePage: React.FC = () => {
     const creatorWallets = new Set(projects.map(p => p.creatorWallet));
     return creatorWallets.size;
   }, [projects]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Spinner className="h-12 w-12" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-16 sm:space-y-24 animate-fade-in">

@@ -7,7 +7,6 @@ import Button from '../components/Button';
 import { Milestone } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
-import Spinner from '../components/Spinner';
 
 const CheckCircleIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -44,7 +43,7 @@ const MilestoneStatusIcon: React.FC<{ status: Milestone['status'] }> = ({ status
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { projects, user, fundProject, isLoading } = useAppContext();
+  const { projects, user, fundProject } = useAppContext();
   const [isFundingModalOpen, setIsFundingModalOpen] = useState(false);
   const [fundAmount, setFundAmount] = useState('');
 
@@ -58,14 +57,6 @@ const ProjectDetailPage: React.FC = () => {
       setFundAmount('');
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <Spinner className="h-12 w-12" />
-      </div>
-    );
-  }
 
   if (!project) {
     return (
