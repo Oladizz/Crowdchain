@@ -4,6 +4,7 @@ import { useAppContext } from '../context/AppContext';
 import ProjectCard from '../components/ProjectCard';
 import { Project } from '../context/types';
 import Button from '../components/Button';
+import Spinner from '../components/Spinner';
 
 const UserCircleIcon: React.FC<{className?: string}> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-24 w-24 text-brand-muted"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -20,7 +21,7 @@ const CopyIcon: React.FC<{className?: string}> = ({ className }) => (
 
 const ProfilePage: React.FC = () => {
     const { walletAddress } = useParams<{ walletAddress: string }>();
-    const { projects, user: loggedInUser, truncateAddress, getUserProfileByWallet, addToast } = useAppContext();
+    const { projects, user: loggedInUser, truncateAddress, getUserProfileByWallet, addToast, isLoading } = useAppContext();
     const [profileData, setProfileData] = React.useState<{ username?: string; avatar?: string } | null>(null);
 
     React.useEffect(() => {
@@ -39,6 +40,14 @@ const ProfilePage: React.FC = () => {
             addToast('Wallet address copied to clipboard!', 'success');
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-96">
+                <Spinner className="h-12 w-12" />
+            </div>
+        );
+    }
 
     if (!walletAddress) {
         return (
@@ -76,7 +85,7 @@ const ProfilePage: React.FC = () => {
                         <UserCircleIcon className="w-20 h-20 text-brand-muted" />
                     </div>
                 )}
-                <div className="text-center sm:text-left min-w-0 flex-1">
+                <div className="text-center sm:text-left min-w-0 flex-1 overflow-hidden">
                     <h1 className="text-2xl sm:text-3xl font-bold text-white truncate">{username}</h1>
                     <button 
                         onClick={handleCopyAddress} 

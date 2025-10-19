@@ -6,9 +6,10 @@ import { Proposal } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
 import Button from '../components/Button';
+import Spinner from '../components/Spinner';
 
 const DaoPage: React.FC = () => {
-    const { proposals, user, voteOnProposal } = useAppContext();
+    const { proposals, user, voteOnProposal, isLoading } = useAppContext();
     const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
     
     const handleVoteClick = (proposal: Proposal) => {
@@ -26,6 +27,14 @@ const DaoPage: React.FC = () => {
             setSelectedProposal(null);
         }
     };
+
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center h-96">
+          <Spinner className="h-12 w-12" />
+        </div>
+      );
+    }
 
   return (
     <>

@@ -71,20 +71,20 @@ const SettingsTab: React.FC = () => {
                 <h2 className="text-xl font-semibold text-center text-white">Application Settings</h2>
                 
                 <div className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg flex justify-between items-center">
-                    <div>
+                    <div className="min-w-0 mr-4">
                         <h3 className="font-medium text-white">Theme</h3>
                         <p className="text-sm text-brand-muted">Switch between light and dark mode.</p>
                     </div>
                     <button 
                         onClick={toggleTheme}
-                        className={`w-14 h-7 rounded-full transition-colors flex items-center p-1 shadow-inner ${theme === 'dark' ? 'bg-brand-blue' : 'bg-gray-400'}`}
+                        className={`w-14 h-7 rounded-full transition-colors flex items-center p-1 shadow-inner flex-shrink-0 ${theme === 'dark' ? 'bg-brand-blue' : 'bg-gray-400'}`}
                     >
                         <span className={`block w-5 h-5 rounded-full bg-white transform transition-transform shadow-md ${theme === 'dark' ? 'translate-x-7' : 'translate-x-0'}`}></span>
                     </button>
                 </div>
 
                 <div className="p-6 bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-lg flex justify-between items-center">
-                     <div>
+                     <div className="min-w-0 mr-4">
                         <h3 className="font-medium text-white">Wallet</h3>
                         <p className="text-sm text-brand-muted">Disconnect your wallet from the app.</p>
                     </div>

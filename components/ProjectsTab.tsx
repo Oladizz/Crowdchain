@@ -6,6 +6,7 @@ import { useAppContext } from '../context/AppContext';
 import { Milestone } from '../context/types';
 import Button from './Button';
 import Modal from './Modal';
+import Spinner from './Spinner';
 
 const StatusBadge: React.FC<{ status: Milestone['status'] }> = ({ status }) => {
     const baseClasses = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full';
@@ -23,13 +24,21 @@ interface ProjectsTabProps {
 
 
 const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
-    const { user, projects, updateMilestoneStatus } = useAppContext();
+    const { user, projects, updateMilestoneStatus, isLoading } = useAppContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedMilestone, setSelectedMilestone] = useState<{ projectId: string, milestone: Milestone } | null>(null);
     const [proof, setProof] = useState('');
     const [file, setFile] = useState<File | null>(null);
 
     if (!user) return null;
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center py-10">
+                <Spinner className="h-8 w-8" />
+            </div>
+        );
+    }
 
     const myProjects = projects.filter(p => user.createdProjectIds.includes(p.id));
 
