@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
@@ -7,6 +5,8 @@ import Button from '../components/Button';
 import { Milestone } from '../context/types';
 import { useAppContext } from '../context/AppContext';
 import Modal from '../components/Modal';
+import { getDynamicFontSize } from '../utils';
+import CommentSection from '../components/CommentSection';
 
 const CheckCircleIcon: React.FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -43,9 +43,10 @@ const MilestoneStatusIcon: React.FC<{ status: Milestone['status'] }> = ({ status
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { projects, user, fundProject } = useAppContext();
+  const { projects, user, fundProject, addProjectUpdate } = useAppContext();
   const [isFundingModalOpen, setIsFundingModalOpen] = useState(false);
   const [fundAmount, setFundAmount] = useState('');
+  const [updateText, setUpdateText] = useState('');
 
   const project = projects.find(p => p.id === id);
 
@@ -56,6 +57,13 @@ const ProjectDetailPage: React.FC = () => {
       setIsFundingModalOpen(false);
       setFundAmount('');
     }
+  };
+
+  const handleUpdateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!project || !updateText.trim()) return;
+    await addProjectUpdate(project.id, updateText);
+    setUpdateText('');
   };
 
   if (!project) {
@@ -70,6 +78,7 @@ const ProjectDetailPage: React.FC = () => {
     );
   }
 
+  const isCreator = user?.walletAddress.toLowerCase() === project.creatorWallet.toLowerCase();
   const percentage = Math.round((project.amountRaised / project.fundingGoal) * 100);
   const daysLeft = Math.ceil((new Date(project.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
@@ -93,9 +102,15 @@ const ProjectDetailPage: React.FC = () => {
 
           <div className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5">
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Updates</h2>
+              {isCreator && (
+                  <form onSubmit={handleUpdateSubmit} className="mb-6 space-y-2">
+                      <textarea value={updateText} onChange={(e) => setUpdateText(e.target.value)} placeholder="Post a new update for your backers..." rows={3} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white" required />
+                      <div className="text-right"><Button type="submit" variant="primary" disabled={!updateText.trim()}>Post Update</Button></div>
+                  </form>
+              )}
               {project.updates.length > 0 ? (
                 <div className="space-y-4">
-                    {project.updates.map((update, index) => (
+                    {project.updates.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((update, index) => (
                         <div key={index} className="border-l-4 border-brand-blue pl-4">
                             <p className="text-xs sm:text-sm text-brand-muted">{new Date(update.date).toLocaleDateString()}</p>
                             <p className="text-sm sm:text-base text-gray-900 dark:text-white">{update.message}</p>
@@ -106,6 +121,8 @@ const ProjectDetailPage: React.FC = () => {
                 <p className="text-sm sm:text-base text-brand-muted">No updates yet. Stay tuned!</p>
               )}
           </div>
+
+          <CommentSection projectId={project.id} />
         </div>
 
         {/* Right Column (Stats & Milestones) */}
@@ -113,20 +130,20 @@ const ProjectDetailPage: React.FC = () => {
           <div data-guide="project-funding" className="bg-gray-100 dark:bg-brand-surface/60 backdrop-blur-lg dark:border dark:border-white/10 rounded-xl p-4 sm:p-5 sticky top-24">
             <ProgressBar value={project.amountRaised} max={project.fundingGoal} />
             <div className="mt-4">
-              <p className="text-xl sm:text-2xl font-bold text-brand-blue-light break-words">${project.amountRaised.toLocaleString()}</p>
-              <p className="text-xs sm:text-sm text-brand-muted">raised of ${project.fundingGoal.toLocaleString()} goal</p>
+              <p className="text-xl sm:text-2xl font-bold text-brand-blue-light break-words" style={getDynamicFontSize(project.amountRaised)}>${project.amountRaised.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-brand-muted" style={getDynamicFontSize(project.fundingGoal)}>raised of ${project.fundingGoal.toLocaleString()} goal</p>
             </div>
             <div className="mt-4 sm:mt-6 flex justify-between text-sm sm:text-base">
                 <div>
-                    <p className="font-bold text-gray-900 dark:text-white">{percentage}%</p>
+                    <p className="font-bold text-gray-900 dark:text-white" style={getDynamicFontSize(percentage)}>{percentage}%</p>
                     <p className="text-xs sm:text-sm text-brand-muted">Funded</p>
                 </div>
                 <div>
-                    <p className="font-bold text-gray-900 dark:text-white">{daysLeft}</p>
+                    <p className="font-bold text-gray-900 dark:text-white" style={getDynamicFontSize(daysLeft)}>{daysLeft}</p>
                     <p className="text-xs sm:text-sm text-brand-muted">Days Left</p>
                 </div>
             </div>
-            {project.daoStatus === 'Pending' && <p className="mt-4 text-center text-xs sm:text-sm bg-yellow-900 text-yellow-300 p-2 rounded-md">Project is under DAO review.</p>}
+            {project.daoStatus === 'Pending' && <p className="mt-4 text-center text-xs sm:text-sm bg-yellow-900 text-yellow-300 p-2 rounded-lg">Project is under DAO review.</p>}
             <Button 
               data-guide="fund-button"
               variant="primary" 
@@ -160,7 +177,7 @@ const ProjectDetailPage: React.FC = () => {
                 <li key={milestone.id} className="flex items-start space-x-3 sm:space-x-4">
                     <div><MilestoneStatusIcon status={milestone.status}/></div>
                     <div>
-                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{milestone.title} - <span className="text-brand-blue-light" style={getDynamicFontSize(milestone.fundsRequired)}>${milestone.fundsRequired.toLocaleString()}</span></p>
                         <p className="text-xs sm:text-sm text-brand-muted break-words">{milestone.description}</p>
                         {milestone.proof && (
                             <a href={milestone.proof} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-blue-light hover:underline mt-1 inline-block">
@@ -180,7 +197,7 @@ const ProjectDetailPage: React.FC = () => {
             <div className="space-y-4">
                 <div>
                     <label htmlFor="fundAmount" className="block text-sm font-medium text-brand-muted">Amount (in USD)</label>
-                    <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="mt-1 relative rounded-lg shadow-sm">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span className="text-brand-muted sm:text-sm">$</span>
                         </div>
@@ -188,7 +205,7 @@ const ProjectDetailPage: React.FC = () => {
                             type="number"
                             name="fundAmount"
                             id="fundAmount"
-                            className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md py-2 pl-7 pr-4 text-white"
+                            className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg py-2 pl-7 pr-4 text-white"
                             placeholder="0.00"
                             value={fundAmount}
                             onChange={(e) => setFundAmount(e.target.value)}

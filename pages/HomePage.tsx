@@ -5,6 +5,7 @@ import StatCard from '../components/StatCard';
 import ProjectCard from '../components/ProjectCard';
 import { useAppContext } from '../context/AppContext';
 import { ProjectCategory } from '../context/types';
+import ProjectCardSkeleton from '../components/ProjectCardSkeleton';
 
 // --- SVG Icons ---
 const ChevronRightIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
@@ -58,7 +59,7 @@ const categoryIcons: Record<ProjectCategory, React.ReactNode> = {
 };
 
 const HomePage: React.FC = () => {
-  const { projects, user, getUserProfileByWallet } = useAppContext();
+  const { projects, user, getUserProfileByWallet, isLoading } = useAppContext();
   
   const approvedProjects = useMemo(() => projects.filter(p => p.daoStatus === 'Approved'), [projects]);
 
@@ -99,27 +100,27 @@ const HomePage: React.FC = () => {
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white animate-text-focus-in">
           The Future of Funding, <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-purple">
-            Built by Community.
+            Decentralized.
           </span>
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-brand-muted animate-fade-in" style={{ animationDelay: '0.5s' }}>
-          CrowdChain empowers creators by connecting innovative ideas with blockchain-powered funding and true DAO governance.
+          CrowdChain empowers creators and communities by connecting innovative ideas with blockchain-powered funding and DAO governance.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in" style={{ animationDelay: '1s' }}>
           <Link to="/explore"><Button variant="primary" className="w-full sm:w-auto text-base px-8 py-3">Explore Projects</Button></Link>
           <Link to="/create"><Button variant="secondary" className="w-full sm:w-auto text-base px-8 py-3">Start a Project</Button></Link>
-          <Link to="/waitlist"><Button variant="secondary" className="w-full sm:w-auto text-base px-8 py-3">Join Waitlist</Button></Link>
+          <Link to="/waitlist"><Button variant="secondary" className="w-full sm:w-auto text-base px-8 py-3 glowing-button">Join Waitlist</Button></Link>
         </div>
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto text-left animate-fade-in" style={{ animationDelay: '1.2s' }}>
-            <div className="p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="p-4 rounded-xl border border-transparent dark:border-white/10">
                 <h3 className="font-bold text-white">DAO Governed</h3>
                 <p className="text-sm text-brand-muted mt-1">Projects are approved by the community, for the community.</p>
             </div>
-            <div className="p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="p-4 rounded-xl border border-transparent dark:border-white/10">
                 <h3 className="font-bold text-white">Milestone Payouts</h3>
                 <p className="text-sm text-brand-muted mt-1">Funds are released on milestone completion, ensuring accountability.</p>
             </div>
-            <div className="p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="p-4 rounded-xl border border-transparent dark:border-white/10">
                 <h3 className="font-bold text-white">Fully Transparent</h3>
                 <p className="text-sm text-brand-muted mt-1">All funding and voting activities are recorded on-chain.</p>
             </div>
@@ -140,22 +141,22 @@ const HomePage: React.FC = () => {
         <h2 className="text-3xl font-bold text-white mb-2">A Simple, Powerful Process</h2>
         <p className="text-lg text-brand-muted mb-12">From idea to reality in four community-driven steps.</p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="flex flex-col items-center p-4 rounded-xl border border-transparent dark:border-white/10">
                 <PencilIcon />
                 <h3 className="text-lg font-semibold text-white">1. Submit</h3>
                 <p className="text-sm text-brand-muted mt-2">Creators submit detailed project proposals with clear milestones.</p>
             </div>
-            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="flex flex-col items-center p-4 rounded-xl border border-transparent dark:border-white/10">
                 <VoteIcon />
                 <h3 className="text-lg font-semibold text-white">2. Vote</h3>
                 <p className="text-sm text-brand-muted mt-2">The DAO community votes to approve projects for funding.</p>
             </div>
-            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="flex flex-col items-center p-4 rounded-xl border border-transparent dark:border-white/10">
                 <CashIcon />
                 <h3 className="text-lg font-semibold text-white">3. Fund</h3>
                 <p className="text-sm text-brand-muted mt-2">Approved projects are listed for anyone to back and support.</p>
             </div>
-            <div className="flex flex-col items-center p-4 rounded-lg border border-transparent dark:border-white/10">
+            <div className="flex flex-col items-center p-4 rounded-xl border border-transparent dark:border-white/10">
                 <RocketIcon />
                 <h3 className="text-lg font-semibold text-white">4. Build</h3>
                 <p className="text-sm text-brand-muted mt-2">Funds unlock as milestones are met and verified by the DAO.</p>
@@ -173,7 +174,11 @@ const HomePage: React.FC = () => {
                 </Button>
             </Link>
         </div>
-        {spotlightProjects.length > 0 ? (
+        {isLoading ? (
+            <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
+                {Array.from({ length: 4 }).map((_, i) => <div key={i} className="flex-shrink-0 w-64"><ProjectCardSkeleton /></div>)}
+            </div>
+        ) : spotlightProjects.length > 0 ? (
           <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
             {spotlightProjects.map(project => {
                 const creatorProfile = getUserProfileByWallet(project.creatorWallet);
@@ -189,7 +194,7 @@ const HomePage: React.FC = () => {
             })}
           </div>
         ) : (
-          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
+          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-xl">
             <p className="text-brand-muted">No spotlight projects available right now.</p>
           </div>
         )}
@@ -201,12 +206,10 @@ const HomePage: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
               {Object.values(ProjectCategory).map(category => (
                   <Link 
-                      // FIX: Argument of type 'unknown' is not assignable to parameter of type 'string | number | boolean'. Use template literal and cast category.
                       to={`/explore?category=${encodeURIComponent(category as ProjectCategory)}`} 
                       key={category}
-                      className="group bg-brand-surface rounded-lg p-6 flex flex-col items-center justify-center text-center aspect-square transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-purple/30 border border-white/10"
+                      className="group bg-brand-surface rounded-xl p-6 flex flex-col items-center justify-center text-center aspect-square transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-purple/30 border border-white/10"
                   >
-                      {/* FIX: Type 'unknown' cannot be used as an index type. Cast category to use as index. */}
                       {categoryIcons[category as ProjectCategory]}
                       <p className="mt-4 font-semibold text-white transition-colors group-hover:text-brand-blue-light">{category}</p>
                   </Link>
@@ -238,7 +241,7 @@ const HomePage: React.FC = () => {
       )}
       
       {/* Final CTA Section */}
-      <section className="text-center bg-brand-surface rounded-lg p-8 sm:p-12 animate-slide-in-bottom border border-white/10" style={{ animationDelay: '1.2s' }}>
+      <section className="text-center bg-brand-surface rounded-xl p-8 sm:p-12 animate-slide-in-bottom border border-white/10" style={{ animationDelay: '1.2s' }}>
           <h2 className="text-3xl font-bold text-white">Ready to Dive In?</h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-brand-muted">
               Explore groundbreaking projects or bring your own vision to the community.
@@ -254,7 +257,11 @@ const HomePage: React.FC = () => {
         <div className="flex justify-between items-center mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Newest Projects</h2>
         </div>
-        {newestProjects.length > 0 ? (
+        {isLoading ? (
+            <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
+                {Array.from({ length: 4 }).map((_, i) => <div key={i} className="flex-shrink-0 w-64"><ProjectCardSkeleton /></div>)}
+            </div>
+        ) : newestProjects.length > 0 ? (
           <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-4 -mx-4 px-4">
             {newestProjects.map(project => {
                 const creatorProfile = getUserProfileByWallet(project.creatorWallet);
@@ -270,7 +277,7 @@ const HomePage: React.FC = () => {
             })}
           </div>
         ) : (
-          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-lg">
+          <div className="text-center py-10 bg-gray-100 dark:bg-brand-surface rounded-xl">
             <p className="text-brand-muted">No new projects available right now.</p>
           </div>
         )}

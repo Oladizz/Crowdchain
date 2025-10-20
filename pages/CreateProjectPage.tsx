@@ -1,5 +1,3 @@
-
-
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleGenAI, Type } from '@google/genai';
@@ -20,6 +18,18 @@ interface GeneratedProjectData {
     category: ProjectCategory;
     milestones: GeneratedMilestone[];
 }
+
+const PlusIcon: React.FC<{className?: string}> = ({className}) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+);
+
+const TrashIcon: React.FC<{className?: string}> = ({className}) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+    </svg>
+);
 
 const CreateProjectPage: React.FC = () => {
     const [mode, setMode] = useState<'ai' | 'manual'>('ai');
@@ -204,7 +214,7 @@ const CreateProjectPage: React.FC = () => {
                         onChange={(e) => setPrompt(e.target.value)}
                         placeholder="e.g., An open-source, decentralized social media app focused on user privacy."
                         rows={4}
-                        className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white"
+                        className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white"
                         disabled={isLoading}
                     />
                     <div className="flex justify-end">
@@ -221,15 +231,15 @@ const CreateProjectPage: React.FC = () => {
                          <h3 className="text-lg font-semibold text-white">Project Details</h3>
                          <div>
                             <label htmlFor="name" className="block text-sm font-medium text-brand-muted mb-1">Project Name</label>
-                            <input type="text" name="name" id="name" value={manualData.name} onChange={handleManualChange} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white" required />
+                            <input type="text" name="name" id="name" value={manualData.name} onChange={handleManualChange} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white" required />
                          </div>
                          <div>
                             <label htmlFor="description" className="block text-sm font-medium text-brand-muted mb-1">Description</label>
-                            <textarea name="description" id="description" value={manualData.description} onChange={handleManualChange} rows={4} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white" required />
+                            <textarea name="description" id="description" value={manualData.description} onChange={handleManualChange} rows={4} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white" required />
                          </div>
                          <div>
                             <label htmlFor="category" className="block text-sm font-medium text-brand-muted mb-1">Category</label>
-                            <select name="category" id="category" value={manualData.category} onChange={handleManualChange} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white">
+                            <select name="category" id="category" value={manualData.category} onChange={handleManualChange} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white">
                                 {Object.values(ProjectCategory).map(cat => <option key={cat} value={cat}>{cat}</option>)}
                             </select>
                          </div>
@@ -237,20 +247,23 @@ const CreateProjectPage: React.FC = () => {
                     <div className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 p-4 sm:p-6 rounded-xl space-y-4">
                         <h3 className="text-lg font-semibold text-white">Funding Milestones</h3>
                         {manualData.milestones.map((milestone, index) => (
-                            <div key={index} className="p-3 border border-brand-bg rounded-md space-y-3">
+                            <div key={index} className="p-3 border border-brand-bg rounded-lg space-y-3">
                                 <div className="flex justify-between items-center">
                                     <p className="font-medium text-white">Milestone {index + 1}</p>
                                     {manualData.milestones.length > 1 && (
-                                        <button onClick={() => removeMilestone(index)} className="text-xs text-red-400 hover:text-red-300">&times; Remove</button>
+                                        <button onClick={() => removeMilestone(index)} className="text-red-400 hover:text-red-300 p-1 rounded-full hover:bg-red-500/20 transition-colors">
+                                            <span className="sr-only">Remove milestone</span>
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
                                     )}
                                 </div>
-                                <input type="text" name="title" placeholder="Milestone Title" value={milestone.title} onChange={(e) => handleMilestoneChange(index, e)} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white text-sm" required />
-                                <textarea name="description" placeholder="Milestone Description" value={milestone.description} onChange={(e) => handleMilestoneChange(index, e)} rows={2} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white text-sm" />
-                                <input type="number" name="fundsRequired" placeholder="Funds Required (USD)" value={milestone.fundsRequired || ''} onChange={(e) => handleMilestoneChange(index, e)} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-white text-sm" required min="1" />
+                                <input type="text" name="title" placeholder="Milestone Title" value={milestone.title} onChange={(e) => handleMilestoneChange(index, e)} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white text-sm" required />
+                                <textarea name="description" placeholder="Milestone Description" value={milestone.description} onChange={(e) => handleMilestoneChange(index, e)} rows={2} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white text-sm" />
+                                <input type="number" name="fundsRequired" placeholder="Funds Required (USD)" value={milestone.fundsRequired || ''} onChange={(e) => handleMilestoneChange(index, e)} className="w-full bg-brand-bg border border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-white text-sm" required min="1" />
                             </div>
                         ))}
                          <div className="flex justify-between items-center">
-                            <Button variant="secondary" onClick={addMilestone}>Add Milestone</Button>
+                            <Button variant="secondary" onClick={addMilestone} Icon={PlusIcon}>Add Milestone</Button>
                             <p className="text-right font-bold text-white">Total Funding Goal: <span className="text-brand-blue-light">${totalManualGoal.toLocaleString()}</span></p>
                         </div>
                     </div>
@@ -260,7 +273,7 @@ const CreateProjectPage: React.FC = () => {
                 </div>
             )}
             
-            {error && <p className="text-center text-red-400 bg-red-900/50 p-3 rounded-md animate-fade-in">{error}</p>}
+            {error && <p className="text-center text-red-400 bg-red-900/50 p-3 rounded-lg animate-fade-in">{error}</p>}
 
             {isLoading && (
                 <div className="text-center py-10">
@@ -291,7 +304,7 @@ const CreateProjectPage: React.FC = () => {
                         <h3 className="text-lg font-semibold text-white">Generated Milestones</h3>
                         <div className="space-y-3">
                             {generatedData.milestones.map((milestone, index) => (
-                                <div key={index} className="p-3 border border-brand-bg rounded-md">
+                                <div key={index} className="p-3 border border-brand-bg rounded-lg">
                                     <p className="font-medium text-white break-words">{milestone.title} - <span className="text-brand-blue-light">${milestone.fundsRequired.toLocaleString()}</span></p>
                                     <p className="text-sm text-brand-muted break-words">{milestone.description}</p>
                                 </div>

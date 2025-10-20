@@ -1,8 +1,9 @@
 
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
 const BlockIcon: React.FC<{className?: string}> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-8 w-8 text-brand-blue"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -35,6 +36,12 @@ const UserIcon: React.FC<{className?: string}> = ({className}) => (
     </svg>
 );
 
+const AdminIcon: React.FC<{className?: string}> = ({className}) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    </svg>
+);
+
 interface NavItemProps {
   to: string;
   label: string;
@@ -56,17 +63,34 @@ const NavItem: React.FC<NavItemProps> = ({ to, label, icon: Icon }) => {
 
 const Sidebar: React.FC = () => {
     const { user, truncateAddress } = useAppContext();
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const checkAdminStatus = async () => {
+            if (user?.walletAddress) {
+                const adminRef = doc(db, "admins", user.walletAddress.toLowerCase());
+                const adminDoc = await getDoc(adminRef);
+                setIsAdmin(adminDoc.exists());
+            } else {
+                setIsAdmin(false);
+            }
+        };
+
+        checkAdminStatus();
+    }, [user]);
+
     return (
         <aside className="fixed top-0 left-0 z-40 w-64 h-screen bg-brand-surface/60 backdrop-blur-lg border-r border-white/10 hidden md:flex flex-col p-4">
-            <div className="flex items-center space-x-2 mb-8 px-2">
+            <NavLink to="/" className="flex items-center space-x-2 mb-8 px-2">
                 <BlockIcon />
                 <span className="text-xl font-bold text-white tracking-wider">CrowdChain</span>
-            </div>
+            </NavLink>
             <nav className="flex-1 flex flex-col space-y-2">
-                <NavItem to="/" label="Home" icon={HomeIcon} />
+                
                 <NavItem to="/explore" label="Explore" icon={CompassIcon} />
                 <NavItem to="/dao" label="DAO Governance" icon={DaoIcon} />
                 {user && <NavItem to="/dashboard" label="Dashboard" icon={UserIcon} />}
+                {isAdmin && <NavItem to="/admin" label="Admin" icon={AdminIcon} />}
             </nav>
             {user && (
                 <div className="mt-auto p-2 bg-brand-bg/80 rounded-lg border border-white/10">

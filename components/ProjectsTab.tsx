@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
@@ -91,7 +89,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                             <ul className="space-y-3">
                                 {project.milestones.map(milestone => (
                                     <li key={milestone.id} className="flex flex-col sm:flex-row justify-between sm:items-center p-3 bg-gray-200 dark:bg-white/5 rounded-lg gap-3 border border-gray-300 dark:border-white/10">
-                                        <div>
+                                        <div className="min-w-0">
                                             <p className="font-medium text-gray-900 dark:text-white break-words">{milestone.title}</p>
                                             <p className="text-xs text-brand-muted break-words">{milestone.description}</p>
                                         </div>
@@ -129,7 +127,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                             setProof(e.target.value);
                             if (e.target.value) setFile(null);
                         }}
-                        className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-gray-900 dark:text-white"
+                        className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-gray-900 dark:text-white"
                         placeholder="https://example.com/proof.pdf"
                     />
                 </div>
@@ -155,7 +153,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ setActiveTab }) => {
                         </label>
                     </div> 
                     {file && (
-                        <div className="mt-2 text-sm text-green-400 bg-green-900/50 p-2 rounded-md text-center">
+                        <div className="mt-2 text-sm text-green-400 bg-green-900/50 p-2 rounded-lg text-center">
                             Selected file: <span className="font-medium">{file.name}</span>
                         </div>
                     )}

@@ -52,7 +52,7 @@ const UserGuide: React.FC<UserGuideProps> = ({ steps, guideKey, onClose }) => {
   };
   
   const finishGuide = () => {
-      localStorage.setItem(`guide_${guideKey}_viewed`, 'true');
+      
       onClose();
   }
   

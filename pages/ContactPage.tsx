@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
+import { db } from '../services/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const CheckCircleIcon: React.FC<{className?: string}> = ({className}) => (
      <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-16 w-16 text-green-400"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -10,10 +12,30 @@ const CheckCircleIcon: React.FC<{className?: string}> = ({className}) => (
 
 const ContactPage: React.FC = () => {
     const [submitted, setSubmitted] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
+        if (!name || !email || !message) {
+            setError('Please fill out all fields.');
+            return;
+        }
+        setError('');
+        try {
+            await addDoc(collection(db, "contacts"), {
+                name: name,
+                email: email,
+                message: message,
+                createdAt: serverTimestamp()
+            });
+            setSubmitted(true);
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            setError("Failed to send message. Please try again.");
+        }
     };
 
     return (
@@ -42,17 +64,18 @@ const ContactPage: React.FC = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                         <div>
                             <label htmlFor="name" className="block text-sm font-medium text-brand-muted">Full Name</label>
-                            <input type="text" name="name" id="name" required className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-gray-900 dark:text-white" />
+                            <input type="text" name="name" id="name" required value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-gray-900 dark:text-white" />
                         </div>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-brand-muted">Email Address</label>
-                            <input type="email" name="email" id="email" required className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-gray-900 dark:text-white" />
+                            <input type="email" name="email" id="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-gray-900 dark:text-white" />
                         </div>
                     </div>
                     <div>
                         <label htmlFor="message" className="block text-sm font-medium text-brand-muted">Message</label>
-                        <textarea name="message" id="message" rows={5} required className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-2 text-gray-900 dark:text-white"></textarea>
+                        <textarea name="message" id="message" rows={5} required value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1 w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-2 text-gray-900 dark:text-white"></textarea>
                     </div>
+                    {error && <p className="text-red-400 text-sm text-center">{error}</p>}
                     <div className="text-right">
                         <Button type="submit" variant="primary">Send Message</Button>
                     </div>

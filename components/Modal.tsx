@@ -17,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
       onClick={onClose}
     >
       <div 
-        className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-xl w-full max-w-md m-4 p-5 sm:p-6 text-white transform transition-all animate-slide-in-bottom"
+        className="bg-brand-surface/60 backdrop-blur-lg border border-white/10 rounded-xl shadow-xl w-full max-w-md m-4 p-5 sm:p-6 text-white transform transition-all animate-slide-in-bottom flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
@@ -28,7 +28,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
             </svg>
           </button>
         </div>
-        <div>
+        <div className="overflow-y-auto pb-5">
           {children}
         </div>
       </div>

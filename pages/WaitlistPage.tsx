@@ -1,8 +1,8 @@
-
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import { db } from '../services/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 const MailIcon: React.FC<{className?: string}> = ({className}) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className || "h-16 w-16 text-brand-blue"} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -18,11 +18,12 @@ const CheckCircleIcon: React.FC<{className?: string}> = ({className}) => (
 
 
 const WaitlistPage: React.FC = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         // Basic email validation
         if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -30,13 +31,23 @@ const WaitlistPage: React.FC = () => {
             return;
         }
         setError('');
-        // In a real app, you would send this email to your backend.
-        console.log('Waitlist submission:', email);
-        setSubmitted(true);
+        try {
+            await addDoc(collection(db, "waitlist"), {
+                email: email,
+                createdAt: serverTimestamp()
+            });
+            setSubmitted(true);
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            setError("Failed to submit email. Please try again.");
+        }
     };
 
     return (
         <div className="max-w-4xl mx-auto space-y-10 py-8 animate-fade-in">
+            <div className="absolute top-24 left-4">
+                <Button variant="secondary" onClick={() => navigate(-1)}>Back</Button>
+            </div>
             <div className="text-center flex flex-col items-center">
                  {submitted ? <CheckCircleIcon /> : <MailIcon />}
                 <h1 className="mt-4 text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
@@ -68,7 +79,7 @@ const WaitlistPage: React.FC = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            className="flex-grow w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-md p-3 text-gray-900 dark:text-white"
+                            className="flex-grow w-full bg-white dark:bg-brand-bg border border-gray-300 dark:border-brand-surface focus:border-brand-blue focus:ring-brand-blue rounded-lg p-3 text-gray-900 dark:text-white"
                             placeholder="your@email.com"
                             aria-label="Email Address"
                         />

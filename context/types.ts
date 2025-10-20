@@ -1,4 +1,3 @@
-
 export enum ProjectCategory {
   TECH = 'Technology',
   ART = 'Art',
@@ -30,6 +29,8 @@ export interface Project {
   milestones: Milestone[];
   daoStatus: 'Pending' | 'Approved' | 'Rejected';
   updates: { date: string; message: string }[];
+  isFeatured?: boolean;
+  backers?: string[];
 }
 
 export interface Proposal {
@@ -41,12 +42,17 @@ export interface Proposal {
   votesFor: number;
   votesAgainst: number;
   deadline: string;
+  votedBy?: string[];
 }
 
 export interface User {
   walletAddress: string;
   username?: string;
   avatar?: string;
+  bio?: string;
+  twitterHandle?: string;
+  website?: string;
   createdProjectIds: string[];
   fundedProjects: { projectId: string; amount: number }[];
+  status?: 'active' | 'suspended';
 }

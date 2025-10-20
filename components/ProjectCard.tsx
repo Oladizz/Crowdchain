@@ -44,7 +44,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, creatorUsername, cre
         
         {/* Creator Info */}
         <div className="mt-3">
-            <a href={`#/profile/${project.creatorWallet}`} onClick={handleCreatorClick} className="flex items-center space-x-2 group/creator">
+            <div onClick={handleCreatorClick} className="flex items-center space-x-2 group/creator cursor-pointer">
                 {creatorAvatar ? (
                     <img src={creatorAvatar} alt={creatorUsername} className="w-6 h-6 rounded-full object-cover border border-brand-bg" />
                 ) : (
@@ -55,7 +55,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, creatorUsername, cre
                 <span className="text-xs text-brand-muted group-hover/creator:text-white truncate transition-colors">
                     by {creatorUsername || project.creator}
                 </span>
-            </a>
+            </div>
         </div>
 
         {/* Bottom section */}

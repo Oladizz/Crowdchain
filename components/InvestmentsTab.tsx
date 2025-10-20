@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import ProgressBar from './ProgressBar';
+import { getDynamicFontSize } from '../utils';
 
 const InvestmentsTab: React.FC = () => {
     const { user, projects } = useAppContext();
@@ -25,13 +26,13 @@ const InvestmentsTab: React.FC = () => {
                                 <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                                     <div className="flex-grow">
                                         <p className="font-semibold text-gray-900 dark:text-white break-words">{project.name}</p>
-                                        <p className="text-sm text-brand-muted">You invested: <span className="font-bold text-brand-blue-light">${amount.toLocaleString()}</span></p>
+                                        <p className="text-sm text-brand-muted">You invested: <span className="font-bold text-brand-blue-light" style={getDynamicFontSize(amount)}>${amount.toLocaleString()}</span></p>
                                     </div>
                                     <div className="w-full sm:w-1/3">
                                         <ProgressBar value={project.amountRaised} max={project.fundingGoal} />
                                         <div className="flex justify-between text-xs mt-1">
-                                            <span className="text-brand-muted">Raised: ${project.amountRaised.toLocaleString()}</span>
-                                            <span className="text-brand-muted">Goal: ${project.fundingGoal.toLocaleString()}</span>
+                                            <span className="text-brand-muted" style={getDynamicFontSize(project.amountRaised)}>Raised: ${project.amountRaised.toLocaleString()}</span>
+                                            <span className="text-brand-muted" style={getDynamicFontSize(project.fundingGoal)}>Goal: ${project.fundingGoal.toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
