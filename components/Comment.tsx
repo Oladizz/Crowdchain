@@ -27,14 +27,16 @@ const Comment: React.FC<CommentProps> = ({ authorAvatar, authorUsername, authorW
                     </div>
                 )}
             </Link>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
                 <div className="flex items-baseline space-x-2">
-                    <Link to={`/profile/${authorWallet}`} className="font-semibold text-white hover:underline">
-                        {authorUsername}
-                    </Link>
-                    <span className="text-xs text-brand-muted">{date.toLocaleString()}</span>
+                    <div className="truncate">
+                        <Link to={`/profile/${authorWallet}`} className="font-semibold text-white hover:underline">
+                            {authorUsername}
+                        </Link>
+                    </div>
+                    <span className="text-xs text-brand-muted flex-shrink-0">{date.toLocaleString()}</span>
                 </div>
-                <p className="mt-1 text-brand-muted">{text}</p>
+                <p className="mt-1 text-brand-muted break-words">{text}</p>
             </div>
         </div>
     );
