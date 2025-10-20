@@ -16,19 +16,26 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
     useEffect(() => {
         const checkAdminStatus = async () => {
-            if (user?.walletAddress) {
-                const adminRef = doc(db, "admins", user.walletAddress.toLowerCase());
-                const adminDoc = await getDoc(adminRef);
-                if (adminDoc.exists()) {
-                    setIsAdmin(true);
+            try {
+                if (user?.walletAddress) {
+                    const adminRef = doc(db, "admins", user.walletAddress.toLowerCase());
+                    const adminDoc = await getDoc(adminRef);
+                    if (adminDoc.exists()) {
+                        setIsAdmin(true);
+                    } else {
+                        addToast("You don't have permission to access this page.", 'error');
+                        setIsAdmin(false);
+                    }
                 } else {
-                    addToast("You don't have permission to access this page.", 'error');
                     setIsAdmin(false);
                 }
-            } else {
+            } catch (error) {
+                console.error("Error checking admin status:", error);
+                addToast("An error occurred while checking admin status.", 'error');
                 setIsAdmin(false);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
         // Delay check slightly to allow user context to populate

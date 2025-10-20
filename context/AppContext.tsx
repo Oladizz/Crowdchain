@@ -259,7 +259,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         }
         await updateDoc(userRef, { fundedProjects: updatedFundedProjects });
 
-        addToast(`Successfully funded with $${amount}!`, 'success');
+        addToast(`Successfully funded with ${amount}!`, 'success');
     } catch (e) {
         console.error("Error funding project: ", e);
         addToast('Failed to fund project.', 'error');
@@ -394,7 +394,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!user) return;
     const userRef = doc(db, "users", user.walletAddress.toLowerCase());
     try {
-        await setDoc(userRef, profileData, { merge: true });
+        const cleanedProfileData = Object.fromEntries(
+            Object.entries(profileData).filter(([, value]) => value !== undefined)
+        );
+
+        if (Object.keys(cleanedProfileData).length === 0) {
+            addToast('No changes to save.', 'info');
+            return;
+        }
+
+        await setDoc(userRef, cleanedProfileData, { merge: true });
         addToast('Profile updated successfully!', 'success');
     } catch (e) {
         console.error("Error updating profile: ", e);
