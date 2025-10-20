@@ -43,7 +43,7 @@ const MilestoneStatusIcon: React.FC<{ status: Milestone['status'] }> = ({ status
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { projects, user, fundProject, addProjectUpdate } = useAppContext();
+  const { projects, user, fundProject, addProjectUpdate, addToast } = useAppContext();
   const [isFundingModalOpen, setIsFundingModalOpen] = useState(false);
   const [fundAmount, setFundAmount] = useState('');
   const [updateText, setUpdateText] = useState('');
@@ -53,7 +53,13 @@ const ProjectDetailPage: React.FC = () => {
   const handleFundSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (project && fundAmount && Number(fundAmount) > 0) {
-      fundProject(project.id, Number(fundAmount));
+      const amount = Number(fundAmount);
+      const remainingAmount = project.fundingGoal - project.amountRaised;
+      if (amount > remainingAmount) {
+        addToast("You cannot fund more than the remaining amount.", 'error');
+        return;
+      }
+      fundProject(project.id, amount);
       setIsFundingModalOpen(false);
       setFundAmount('');
     }
@@ -81,6 +87,7 @@ const ProjectDetailPage: React.FC = () => {
   const isCreator = user?.walletAddress.toLowerCase() === project.creatorWallet.toLowerCase();
   const percentage = Math.round((project.amountRaised / project.fundingGoal) * 100);
   const daysLeft = Math.ceil((new Date(project.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+  const remainingAmount = project.fundingGoal - project.amountRaised;
 
   return (
     <>
@@ -149,7 +156,7 @@ const ProjectDetailPage: React.FC = () => {
               variant="primary" 
               className="w-full mt-6 text-sm sm:text-base"
               onClick={() => setIsFundingModalOpen(true)}
-              disabled={!user || project.daoStatus !== 'Approved' || daysLeft <= 0}
+              disabled={!user || project.daoStatus !== 'Approved' || daysLeft <= 0 || project.amountRaised >= project.fundingGoal}
             >
               {daysLeft > 0 ? 'Fund this Project' : 'Funding Ended'}
             </Button>
@@ -210,6 +217,7 @@ const ProjectDetailPage: React.FC = () => {
                             value={fundAmount}
                             onChange={(e) => setFundAmount(e.target.value)}
                             min="1"
+                            max={remainingAmount > 0 ? remainingAmount : 0}
                             required
                             autoFocus
                         />
