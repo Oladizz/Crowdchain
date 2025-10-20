@@ -19,7 +19,6 @@ contract CrowdChain is Ownable, Pausable, ReentrancyGuard {
         string description;
         uint256 fundsRequired;
         MilestoneState state;
-        mapping(address => bool) hasVoted;
         uint256 yesVotes;
     }
 
@@ -36,6 +35,7 @@ contract CrowdChain is Ownable, Pausable, ReentrancyGuard {
         Milestone[] milestones;
         address[] funders;
         mapping(address => uint256) contributions;
+        mapping(uint256 => mapping(address => bool)) milestoneVotes;
     }
 
     mapping(uint256 => Project) public projects;
@@ -155,7 +155,7 @@ contract CrowdChain is Ownable, Pausable, ReentrancyGuard {
         require(msg.sender == project.creator, "Only the current creator can transfer ownership");
         require(_newCreator != address(0), "New creator cannot be the zero address");
 
-        address indexed previousCreator = project.creator;
+        address previousCreator = project.creator;
         project.creator = _newCreator;
 
         emit OwnershipTransferred(_projectId, previousCreator, _newCreator);
@@ -166,9 +166,9 @@ contract CrowdChain is Ownable, Pausable, ReentrancyGuard {
         require(project.state == ProjectState.Successful, "Project is not successful");
         require(project.milestones[_milestoneIndex].state == MilestoneState.InReview, "Milestone is not in review");
         require(project.contributions[msg.sender] > 0, "Only funders can vote");
-        require(!project.milestones[_milestoneIndex].hasVoted[msg.sender], "You have already voted on this milestone");
+        require(!project.milestoneVotes[_milestoneIndex][msg.sender], "You have already voted on this milestone");
 
-        project.milestones[_milestoneIndex].hasVoted[msg.sender] = true;
+        project.milestoneVotes[_milestoneIndex][msg.sender] = true;
         project.milestones[_milestoneIndex].yesVotes++;
     }
 

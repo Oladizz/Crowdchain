@@ -23,6 +23,7 @@ interface ContactEntry {
 }
 
 const PAGE_SIZE = 10;
+const SUPER_ADMIN_WALLET = '0xf68f2973d5347a8a27ee3be0618c37b52c846d50';
 
 const AdminPage: React.FC = () => {
     const { addToast, user } = useAppContext();
@@ -156,6 +157,10 @@ const AdminPage: React.FC = () => {
 
     const handleToggleAdmin = async (walletAddress: string) => {
         const address = walletAddress.toLowerCase();
+        if (address === SUPER_ADMIN_WALLET) {
+            addToast("This admin cannot be removed.", 'error');
+            return;
+        }
         if (admins.has(address)) {
             await deleteDoc(doc(db, "admins", address));
             addToast("Admin role revoked.", 'info');
@@ -215,6 +220,7 @@ const AdminPage: React.FC = () => {
                     </div>
                 );
             case 'users':
+                const filteredUsers = data.users.filter(u => u.walletAddress.toLowerCase() !== SUPER_ADMIN_WALLET);
                 return (
                     <div>
                         <SearchBar tab="users" field="wallet address" />
@@ -222,7 +228,7 @@ const AdminPage: React.FC = () => {
                             <table className="min-w-full text-sm align-middle">
                                 <thead className="text-left"><tr className="border-b-2 border-brand-surface"><th className="p-2">Wallet Address</th><th className="p-2">Username</th><th className="p-2">Status</th><th className="p-2">Admin</th><th className="p-2">Actions</th></tr></thead>
                                 <tbody>
-                                    {data.users.map((u: User) => {
+                                    {filteredUsers.map((u: User) => {
                                         const isAdmin = admins.has(u.walletAddress.toLowerCase());
                                         const isCurrentUser = user?.walletAddress.toLowerCase() === u.walletAddress.toLowerCase();
                                         return (

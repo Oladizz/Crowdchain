@@ -1,12 +1,12 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-chai-matchers";
-import "@nomicfoundation/hardhat-verify";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
-import "@typechain/hardhat";
+require("@nomicfoundation/hardhat-ethers");
+require("@nomicfoundation/hardhat-chai-matchers");
+require("@nomicfoundation/hardhat-verify");
+require("hardhat-gas-reporter");
+require("solidity-coverage");
+require("@typechain/hardhat");
 
-const config: HardhatUserConfig = {
+/** @type import('hardhat/config').HardhatUserConfig */
+module.exports = {
   solidity: "0.8.24",
   networks: {
     hardhat: {
@@ -22,5 +22,3 @@ const config: HardhatUserConfig = {
     apiKey: process.env.ETHERSCAN_API_KEY, // For contract verification
   },
 };
-
-export default config;
