@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
@@ -12,24 +13,22 @@ import CreateProjectPage from './pages/CreateProjectPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import WaitlistPage from './pages/WaitlistPage';
+// import AiToolsPage from './pages/AiToolsPage'; // NOTE: File not provided, commented out.
 import UserGuide from './components/UserGuide';
-import AdminPage from './pages/AdminPage';
-import AdminRoute from './components/AdminRoute';
-
+import GuideButton from './components/GuideButton';
 import { guideConfig } from './guideConfig';
 import Sidebar from './components/Sidebar';
 import ToastContainer from './components/ToastContainer';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import ProfilePage from './pages/ProfilePage';
-
-import { useAppContext } from './context/AppContext';
+import AdminPage from './pages/AdminPage';
+import AiChatbot from './components/AiChatbot';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const location = useLocation();
-    const { setStartGuide } = useAppContext();
     const [activeGuide, setActiveGuide] = useState<string | null>(null);
-    
+    const isDashboardPage = location.pathname === '/dashboard';
 
     const pathParts = location.pathname.split('/');
     let guideKey = pathParts[1] || 'home';
@@ -39,29 +38,39 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         guideKey = 'home';
     }
 
-    const startGuide = (key: string) => {
-        if(guideConfig[key]){
-            setActiveGuide(key);
-        }
-    }
 
     useEffect(() => {
-        setStartGuide(() => startGuide);
-    }, [setStartGuide]);
-
-
-    useEffect(() => {
-        const hasSeenWelcomeGuide = localStorage.getItem('has_seen_welcome_guide');
-        if (!hasSeenWelcomeGuide && guideKey !== 'home' && guideConfig[guideKey]) {
-            localStorage.setItem('has_seen_welcome_guide', 'true');
-            const timer = setTimeout(() => setActiveGuide(key), 500);
+        const hasViewed = localStorage.getItem(`guide_${guideKey}_viewed`);
+        if (!hasViewed && guideConfig[guideKey]) {
+            const timer = setTimeout(() => setActiveGuide(guideKey), 500);
             return () => clearTimeout(timer);
         }
     }, [guideKey]);
 
+    const startGuide = (key?: string) => {
+        const keyToUse = key || guideKey;
+        if(guideConfig[keyToUse]){
+            localStorage.removeItem(`guide_${keyToUse}_viewed`);
+            setActiveGuide(keyToUse);
+        }
+    }
+
     const closeGuide = () => {
         setActiveGuide(null);
     }
+    
+    useEffect(() => {
+        const handleStartGuide = (event: CustomEvent) => {
+            startGuide(event.detail);
+        };
+        
+        window.addEventListener('start-guide', handleStartGuide as EventListener);
+        
+        return () => {
+            window.removeEventListener('start-guide', handleStartGuide as EventListener);
+        }
+    }, [guideKey]);
+
 
     return (
         <div className="flex min-h-screen font-sans text-gray-800 dark:text-white transition-colors duration-300 relative isolate">
@@ -75,11 +84,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-20 md:pb-6">
                     {children}
                 </main>
-                {(location.pathname === '/dashboard' || location.pathname === '/') && (
-                    <div className={location.pathname === '/dashboard' ? "pb-14 md:pb-0" : ""}>
-                        <Footer />
-                    </div>
-                )}
+                {isDashboardPage && <Footer />}
             </div>
             <BottomNavBar />
             <ToastContainer />
@@ -90,38 +95,42 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     onClose={closeGuide} 
                 />
             )}
+            <GuideButton onClick={() => startGuide()} />
+            <AiChatbot />
         </div>
-    );
-}
-
-
-const AppContent: React.FC = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
-            <Route path="/explore" element={<MainLayout><ExplorePage /></MainLayout>} />
-            <Route path="/project/:id" element={<MainLayout><ProjectDetailPage /></MainLayout>} />
-            <Route path="/profile/:walletAddress" element={<MainLayout><ProfilePage /></MainLayout>} />
-            <Route path="/dao" element={<MainLayout><DaoPage /></MainLayout>} />
-            <Route path="/dashboard" element={<MainLayout><DashboardPage /></MainLayout>} />
-            <Route path="/create" element={<MainLayout><CreateProjectPage /></MainLayout>} />
-            <Route path="/about" element={<MainLayout><AboutPage /></MainLayout>} />
-            <Route path="/contact" element={<MainLayout><ContactPage /></MainLayout>} />
-            <Route path="/waitlist" element={<MainLayout><WaitlistPage /></MainLayout>} />
-            <Route path="/admin" element={<AdminRoute><MainLayout><AdminPage /></MainLayout></AdminRoute>} />
-        </Routes>
     );
 };
 
 
 const App: React.FC = () => {
-  return (
-    <AppProvider>
-      <HashRouter>
-        <AppContent />
-      </HashRouter>
-    </AppProvider>
-  );
+    return (
+        <AppProvider>
+            <HashRouter>
+                <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/*" element={
+                        <MainLayout>
+                            <Routes>
+                                <Route path="/home" element={<HomePage />} />
+                                <Route path="/explore" element={<ExplorePage />} />
+                                <Route path="/project/:id" element={<ProjectDetailPage />} />
+                                <Route path="/dao" element={<DaoPage />} />
+                                <Route path="/dashboard" element={<DashboardPage />} />
+                                <Route path="/create" element={<CreateProjectPage />} />
+                                <Route path="/about" element={<AboutPage />} />
+                                <Route path="/contact" element={<ContactPage />} />
+                                <Route path="/waitlist" element={<WaitlistPage />} />
+                                <Route path="/admin" element={<AdminPage />} />
+                                {/* <Route path="/ai-tools" element={<AiToolsPage />} /> */}
+                                <Route path="/profile/:walletAddress" element={<ProfilePage />} />
+                            </Routes>
+                        </MainLayout>
+                    } />
+                </Routes>
+            </HashRouter>
+        </AppProvider>
+    );
 };
 
+// FIX: Add default export to resolve "no default export" error in index.tsx.
 export default App;
